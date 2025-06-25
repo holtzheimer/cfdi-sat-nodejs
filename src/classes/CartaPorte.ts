@@ -8,7 +8,6 @@ import {
   INodeRemolques,
   INodeSeguros,
   INodeUbicacion,
-  IObjectCartaPorte,
   IObjectNodeUbiDomicilio,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";

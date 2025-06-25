@@ -21,6 +21,7 @@
   - [createXmlSellado](#createXmlSellado)
 - [CatalogoSat](#CatalogoSat)
   - [search](#search)
+- [CartaPorteAutotransporte](#CartaPorteAutotransporte)
 
 ### **Instalación**
 
@@ -1123,3 +1124,7 @@ Abarca del 65000 al 99999
     "regimen_receptor": "601, 603, 606, 612, 620, 621, 622, 623, 624, 625,626"
 }
 ```
+
+### **CartaPorteAutotransporte**
+
+Con esta clase puede generar el complemento carta porte.
