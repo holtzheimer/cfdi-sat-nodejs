@@ -83,12 +83,21 @@ export interface INodeMercancias {
   pesoNetoTotal?: string | number;
   cargoPorTasacion?: string;
 }
+export interface IObjectNodeMercancias {
+  "@_PesoBrutoTotal": string | number;
+  "@_UnidadPeso": string;
+  "@_NumTotalMercancias": string | number;
+  "@_LogisticaInversaRecoleccionDevolucion"?: string;
+  "@_PesoNetoTotal"?: string | number;
+  "@_CargoPorTasacion"?: string;
+  "cartaporte31:Mercancia": IObjectNodeMerc[];
+}
 export interface INodeMercancia {
   mercancia: INodeMerc;
-  documentacionAduanera: INodeDocAduanera[];
-  guiasIdentificacion: INodeGuiasIdent[];
-  cantidadTransporta: INodeCantTransporta[];
-  detalleMercancia: INodeDetMercancia;
+  documentacionAduanera?: INodeDocAduanera[];
+  guiasIdentificacion?: INodeGuiasIdent[];
+  cantidadTransporta?: INodeCantTransporta[];
+  detalleMercancia?: INodeDetMercancia;
 }
 export interface INodeMerc {
   bienesTransp: string;
@@ -130,16 +139,71 @@ export interface INodeMerc {
   tipoMateria?: string;
   descripcionMateria?: string;
 }
+export interface IObjectNodeMerc {
+  "@_BienesTransp": string;
+  "@_Descripcion": string;
+  "@_Cantidad": string;
+  "@_ClaveUnidad": string;
+  "@_PesoEnKg": string | number;
+  "@_ClaveSTCC"?: string;
+  "@_Unidad"?: string;
+  "@_Dimensiones"?: string;
+  "@_MaterialPeligroso"?: "Sí" | "No";
+  "@_CveMaterialPeligroso"?: string | number;
+  "@_Embalaje"?: string;
+  "@_DescripEmbalaje"?: string;
+  "@_SectorCOFEPRIS"?: string;
+  "@_NombreIngredienteActivo"?: string;
+  "@_NomQuimico"?: string;
+  "@_DenominacionGenericaProd"?: string;
+  "@_DenominacionDistintivaProd"?: string;
+  "@_Fabricante"?: string;
+  "@_FechaCaducidad"?: string;
+  "@_LoteMedicamento"?: string;
+  "@_FormaFarmaceutica"?: string;
+  "@_CondicionesEspTransp"?: string;
+  "@_RegistroSanitarioFolioAutorizacion"?: string;
+  "@_PermisoImportacion"?: string;
+  "@_FolioImpoVUCEM"?: string;
+  "@_NumCAS"?: string;
+  "@_RazonSocialEmpImp"?: string;
+  "@_NumRegSanPlagCOFEPRIS"?: string;
+  "@_DatosFabricante"?: string;
+  "@_DatosFormulador"?: string;
+  "@_DatosMaquilador"?: string;
+  "@_UsoAutorizado"?: string;
+  "@_ValorMercancia"?: string;
+  "@_Moneda"?: string;
+  "@_FraccionArancelaria"?: string;
+  "@_UUIDComercioExt"?: string;
+  "@_TipoMateria"?: string;
+  "@_DescripcionMateria"?: string;
+  "cartaporte31:CantidadTransporta"?: IObjectNodeCantTransporta[];
+  "cartaporte31:DocumentacionAduanera": IObjectNodeDocAduanera[];
+  "cartaporte31:GuiasIdentificacion": IObjectNodeGuiasIdent[];
+  "cartaporte31:DetalleMercancia": IObjectNodeDetMercancia;
+}
 export interface INodeDocAduanera {
   tipoDocumento: string;
   numPedimento?: string;
   identDocAduanero?: string;
-  RfcImpo?: string;
+  rfcImpo?: string;
+}
+export interface IObjectNodeDocAduanera {
+  "@_TipoDocumento": string;
+  "@_NumPedimento"?: string;
+  "@_IdentDocAduanero"?: string;
+  "@_RFCImpo"?: string;
 }
 export interface INodeGuiasIdent {
   numeroGuiaIdentificacion: string | number;
   descripGuiaIdentificacion: string;
   pesoGuiaIdentificacion: string | number;
+}
+export interface IObjectNodeGuiasIdent {
+  "@_NumeroGuiaIdentificacion": string | number;
+  "@_DescripGuiaIdentificacion": string;
+  "@_PesoGuiaIdentificacion": string | number;
 }
 export interface INodeCantTransporta {
   cantidad: string | number;
@@ -147,12 +211,25 @@ export interface INodeCantTransporta {
   idDestino: string;
   cvesTransporte?: string | number;
 }
+export interface IObjectNodeCantTransporta {
+  "@_cantidad": string | number;
+  "@_idOrigen": string;
+  "@_idDestino": string;
+  "@_cvesTransporte"?: string | number;
+}
 export interface INodeDetMercancia {
   unidadPesoMerc: string;
   pesoBruto: string | number;
   pesoNeto: string | number;
   pesoTara: string | number;
   numPiezas?: string | number;
+}
+export interface IObjectNodeDetMercancia {
+  "@_UnidadPesoMerc": string;
+  "@_PesoBruto": string | number;
+  "@_PesoNeto": string | number;
+  "@_PesoTara": string | number;
+  "@_NumPiezas"?: string | number;
 }
 export interface INodeAutotransporte {
   permSct: string;

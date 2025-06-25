@@ -9,8 +9,15 @@ import {
   INodeSeguros,
   INodeUbicacion,
   IObjectNodeUbiDomicilio,
+  IObjectNodeMercancias,
+  IObjectNodeMerc,
+  IObjectNodeCantTransporta,
+  IObjectNodeDocAduanera,
+  IObjectNodeGuiasIdent,
+  IObjectNodeDetMercancia,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";
+import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } from "../utils/mercancia_keys";
 
 abstract class CartaPorte {
   private readonly cfdi: string | object;
@@ -85,7 +92,8 @@ abstract class CartaPorte {
     if (this.node_ubicaciones.length > 0) {
       nodeCartaPorteAttrs["cartaporte31:Ubicaciones"] = this.generateNodeUbicaciones();
     }
-
+    const node_mercancias = this.generateNodeMercancias();
+    nodeCartaPorteAttrs["cartaporte31:Mercancias"] = node_mercancias;
     const node_carta_porte = {
       "cartaporte31:CartaPorte": nodeCartaPorteAttrs,
     };
@@ -194,6 +202,71 @@ abstract class CartaPorte {
         return node;
       }),
     };
+  }
+  private generateNodeMercancias() {
+    const att = {} as Partial<IObjectNodeMercancias>;
+    for (const mak of merc_att_keys) {
+      if (this.node_mercancias_attr[mak.entrada]) {
+        att[mak.salida] = this.node_mercancias_attr[mak.entrada] as any;
+      }
+    }
+    att["cartaporte31:Mercancia"] = this.node_mercancias.map((i) => {
+      const node = {} as Partial<IObjectNodeMerc>;
+      for (const mk of mercancia_keys) {
+        if (i.mercancia[mk.entrada]) {
+          node[mk.salida] = i.mercancia[mk.entrada] as any;
+        }
+      }
+      if ("documentacionAduanera" in i && i.documentacionAduanera!.length > 0) {
+        node["cartaporte31:DocumentacionAduanera"] = i.documentacionAduanera!.map((da) => {
+          const da_node = {} as Partial<IObjectNodeDocAduanera>;
+          for (const mda of merc_doc_aduanera) {
+            if (da[mda.entrada]) {
+              da_node[mda.salida] = da[mda.entrada] as any;
+            }
+          }
+          return da_node as IObjectNodeDocAduanera;
+        });
+      }
+      if ("guiasIdentificacion" in i && i.guiasIdentificacion!.length > 0) {
+        node["cartaporte31:GuiasIdentificacion"] = i.guiasIdentificacion!.map((gi) => {
+          const gi_node = {} as Partial<IObjectNodeGuiasIdent>;
+          for (const mgi of merc_guias_ident) {
+            if (gi[mgi.entrada]) {
+              gi_node[mgi.salida] = gi[mgi.entrada] as any;
+            }
+          }
+          return gi_node as IObjectNodeGuiasIdent;
+        });
+      }
+      if ("cantidadTransporta" in i && i.cantidadTransporta!.length > 0) {
+        node["cartaporte31:CantidadTransporta"] = i.cantidadTransporta!.map((ct) => {
+          const ct_node: IObjectNodeCantTransporta = {
+            "@_cantidad": ct.cantidad,
+            "@_idOrigen": ct.idOrigen,
+            "@_idDestino": ct.idDestino,
+          };
+          if ("cvesTransporte" in ct) {
+            ct_node["@_cvesTransporte"] = ct.cvesTransporte;
+          }
+          return ct_node;
+        });
+      }
+      if ("detalleMercancia" in i) {
+        const att: IObjectNodeDetMercancia = {
+          "@_PesoBruto": i.detalleMercancia!.pesoBruto,
+          "@_PesoNeto": i.detalleMercancia!.pesoNeto,
+          "@_PesoTara": i.detalleMercancia!.pesoTara,
+          "@_UnidadPesoMerc": i.detalleMercancia!.unidadPesoMerc,
+        };
+        if ("numPiezas" in i.detalleMercancia!) {
+          att["@_NumPiezas"] = i.detalleMercancia.numPiezas;
+        }
+        node["cartaporte31:DetalleMercancia"] = att;
+      }
+      return node as IObjectNodeMerc;
+    });
+    return att as IObjectNodeMercancias;
   }
   protected setNodeAutotransporteData(data: INodeAutotransporte) {
     this.node_autotransporte = data;
