@@ -10,12 +10,9 @@ class Utils {
       ignoreAttributes: false,
       attributeNamePrefix: "@_",
       format: true,
+      suppressEmptyNode: true,
     });
     return builder.build(json);
-  }
-  public static validateRFC(rfc: string): boolean {
-    const regex = /^([A-ZÑ&]{3,4})-?([0-9]{2})([0-1][0-9])([0-3][0-9])-?([A-Z\d]{3})$/i;
-    return regex.test(rfc);
   }
   public static generateUUID(): string {
     return uuidv4();
@@ -29,6 +26,12 @@ class Utils {
   }
   public static dateCurrent(): string {
     return new Date().toISOString().slice(0, 19);
+  }
+  public static generateIdCcp(): string {
+    const uuid = uuidv4();
+    const partes = uuid.split("-");
+    partes[0] = partes[0].slice(0, 5);
+    return `CCC${partes.join("-")}`;
   }
 }
 export default Utils;

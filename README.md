@@ -6,40 +6,21 @@
 
 - [Instalación](#Instalación)
 - [Importación](#Importación)
-- [Clase ConfigCfdi](#Clase-ConfigCfdi)
-  - [Método getCert](#Método-getCert)
-  - [Método getKeyPem](#Método-getKeyPem)
-- [Clase FacturaCfdi](#Clase-FacturaCfdi)
-  - [Método createNodeComprobante](#Método-createNodeComprobante)
-  - [Método createNodeInformacionGlobal](#Método-createNodeInformacionGlobal)
-  - [Método createNodeRelacionados](#Método-createNodeRelacionados)
-  - [Método createNodeEmisor](#Método-createNodeEmisor)
-  - [Método createNodeReceptor](#Método-createNodeReceptor)
-  - [Método createNodeConcepto](#Método-createNodeConcepto)
-  - [Método createNodeAddenda](#Método-createNodeAddenda)
-- [XML de tipo Egreso](#XML-de-tipo-Egreso)
-  - [Nota de crédito](#Nota-de-crédito)
-  - [Devolución](#Devolución)
-- [XML de tipo Traslado](#XML-de-tipo-Traslado)
-- [Carta Porte](#Carta-porte)
-  - [Creando un nuevo complemento Carta Porte](#Creando-un-nuevo-complemento-Carta-Porte)
-  - [Método crearRegimenesAduaneros](#Método-crearRegimenesAduaneros)
-  - [Método crearUbicacionOrigen](#Método-crearUbicacionOrigen)
-  - [Método crearUbicacionDestino](#Método-crearUbicacionDestino)
-  - [Método crearMercancias](#Método-crearMercancias)
-  - [Método crearMercancia](#Método-crearMercancia)
-  - [Método crearDocumentacionAduanera](#Método-crearDocumentacionAduanera)
-  - [Método crearCantidadTransporta](#Método-crearCantidadTransporta)
-  - [Método crearAutotransporte](#Método-crearAutotransporte)
-  - [Método crearIdentificacionVehicular](#Método-crearIdentificacionVehicular)
-  - [Método crearSeguros](#Método-crearSeguros)
-  - [Método crearRemolques](#Método-crearRemolques)
-  - [Método crearTipoFigura](#Método-crearTipoFigura)
-  - [Método crearPartesTransporte](#Método-crearPartesTransporte)
-  - [Método crearDomicilioTipoFigura](#Método-crearDomicilioTipoFigura)
-  - [Método crearSello](#Método-crearSello)
-  - [Método generarCartaPorte](#Método-generarCartaPorte)
-- [Catálogos](#Catálogos)
+- [ConfigCfdi](#ConfigCfdi)
+  - [getCert](#getCert)
+  - [getKeyPem](#getKeyPem)
+- [FacturaCfdi](#FacturaCfdi)
+  - [createNodeComprobante](#createNodeComprobante)
+  - [createNodeInformacionGlobal](#createNodeInformacionGlobal)
+  - [createNodeRelacionados](#createNodeRelacionados)
+  - [createNodeEmisor](#createNodeEmisor)
+  - [createNodeReceptor](#createNodeReceptor)
+  - [createNodeConcepto](#createNodeConcepto)
+  - [createNodeAddenda](#createNodeAddenda)
+  - [createXml](#createXml)
+  - [createXmlSellado](#createXmlSellado)
+- [CatalogoSat](#CatalogoSat)
+  - [search](#search)
 
 ### **Instalación**
 
@@ -60,7 +41,7 @@ import { ConfigCfdi } from "cfdi-sat-nodejs"; // si usas ESM
 const config = new ConfigCfdi();
 ```
 
-### **Clase ConfigCfdi**
+### **ConfigCfdi**
 
 La clase ConfigCfdi permite configurar las rutas de tu certificado digital, la clave privada y la contraseña proporcionados por el SAT para generar sellos digitales necesarios para firmar el comprobante.
 
@@ -84,7 +65,7 @@ NOTA: Puedes crear un archivo dedicado para exponer una instancia preconfigurada
 
 `ConfigCfdi` expone varios métodos que son utilizados internamente por el paquete, pero también están disponibles en caso de que necesites usarlos de forma directa.
 
-### **Método getCert**
+### **getCert**
 
 Permite obtener la información contenida en el certificado, como su número de certificado, vigencia y otros datos.
 
@@ -107,7 +88,7 @@ OUTPUT:
 */
 ```
 
-### **Método getKeyPem**
+### **getKeyPem**
 
 Obtiene y devuelve la clave privada en formato PEM.
 El método lee el archivo .key, lo desencripta usando el password proporcionado y lo expone en formato PEM listo para su uso.
@@ -119,7 +100,7 @@ console.log(key);
 // OUTPUT: "-----BEGIN ENCRYPTED PRIVATE KEY----- MIIF... -----END ENCRYPTED PRIVATE KEY-----";
 ```
 
-### **Clase FacturaCfdi**
+### **FacturaCfdi**
 
 Genera los comprobantes fiscales en formato XML y JSON.
 Permite crear CFDIs sellados o sin sellar de tipo ingreso, egreso y traslado.
@@ -134,7 +115,7 @@ const configCfdi = new ConfigCfdi({...});
 const fac = new FacturaCfdi(configCfdi);
 ```
 
-### **Método createNodeComprobante**
+### **createNodeComprobante**
 
 Establece los datos generales del comprobante fiscal, como serie, folio, fecha, forma de pago, total, tipo de comprobante, entre otros.
 
@@ -146,11 +127,11 @@ fac.createNodeComprobante({
   serie: "FAC",
   folio: "1",
   fecha: "2025-06-21T03:18:54",
-  formaPago: 99,
   total: 199.94,
   subtotal: "200",
-  metodoPago: "PPD",
   lugarExpedicion: "64000",
+  metodoPago: "PPD",
+  formaPago: 99,
   moneda: "MXN",
   tipoCambio: "1",
   condicionesDePago: "Pago a 3 meses",
@@ -161,24 +142,24 @@ fac.createNodeComprobante({
 
 Debe usarse una sola vez por comprobante.
 
-| Propiedad         | Tipo            | Descripción                                                                                                                    |
-| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| tipoDeComprobante | "I" / "E" / "T" | (opcional) Define el tipo de CFDI para el contribuyente emisor, por defecto su valor es "I".                                   |
-| serie             | string          | Serie del comprobante para control interno del emisor.                                                                         |
-| folio             | string          | Número del comprobante dentro de la serie. Es el número de folio de la factura.                                                |
-| fecha             | string          | Fecha y hora de emisión del CFDI bajo el formato: YYYY-MM-DDTHH:mm:ss                                                          |
-| formaPago         | string / number | Clave que indica cómo se pagaron los bienes o servicios.                                                                       |
-| total             | string / number | Importe total del comprobante. Incluye impuestos, descuentos, etc.                                                             |
-| subtotal          | string / number | Importe antes de aplicar impuestos o descuentos.                                                                               |
-| metodoPago        | string          | Clave que corresponda depende si se paga en una sola exhibición o en parcialidades                                             |
-| lugarExpedicion   | string / number | Código postal desde donde se emite el comprobante.                                                                             |
-| moneda            | string          | (opcional) Clave de la moneda usada, por defecto su valor es "MXN".                                                            |
-| tipoCambio        | string          | Obligatorio si la moneda es distinta de "MXN".                                                                                 |
-| condicionesDePago | string          | (opcional) Condiciones comerciales aplicables para el pago del comprobante.                                                    |
-| descuento         | string / number | (opcional) Importe total de los descuentos aplicables antes de impuestos.                                                      |
-| exportacion       | string / number | (opcional) Clave con la que se identifica si el comprobante ampara una operación de exportación. su valor por defecto es "01". |
+| Propiedad         | Tipo            | Descripción                                                                                                                           |
+| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| tipoDeComprobante | "I" / "E" / "T" | (opcional) Define el tipo de CFDI para el contribuyente emisor, por defecto su valor es "I".                                          |
+| serie             | string          | Serie del comprobante para control interno del emisor.                                                                                |
+| folio             | string          | Número del comprobante dentro de la serie. Es el número de folio de la factura.                                                       |
+| fecha             | string          | Fecha y hora de emisión del CFDI bajo el formato: YYYY-MM-DDTHH:mm:ss                                                                 |
+| total             | string / number | Importe total del comprobante. Incluye impuestos, descuentos, etc.                                                                    |
+| subtotal          | string / number | Importe antes de aplicar impuestos o descuentos.                                                                                      |
+| lugarExpedicion   | string / number | Código postal desde donde se emite el comprobante.                                                                                    |
+| metodoPago        | string          | Requerido cuando el tipo de comprobante es distinto a "T". Clave que corresponda si se paga en una sola exhibición o en parcialidades |
+| formaPago         | string / number | Requerido cuando el tipo de comprobante es distinto a "T". Clave que indica cómo se pagaron los bienes o servicios.                   |
+| moneda            | string          | (opcional) Clave de la moneda usada, por defecto su valor es "MXN".                                                                   |
+| tipoCambio        | string          | Obligatorio si la moneda es distinta de "MXN".                                                                                        |
+| condicionesDePago | string          | (opcional) Condiciones comerciales aplicables para el pago del comprobante.                                                           |
+| descuento         | string / number | (opcional) Importe total de los descuentos aplicables antes de impuestos.                                                             |
+| exportacion       | string / number | (opcional) Clave con la que se identifica si el comprobante ampara una operación de exportación. su valor por defecto es "01".        |
 
-### **Método createNodeInformacionGlobal**
+### **createNodeInformacionGlobal**
 
 Agrega el nodo `cfdi:InformacionGlobal` al comprobante, necesario cuando se emiten facturas globales por operaciones con el público en general.
 
@@ -198,7 +179,7 @@ Debe usarse una sola vez por comprobante.
 | meses        | "01" al "18"    | Mes o meses que abarca los movimientos del comprobante |
 | anio         | string / number | Año que abarca los movimientos del comprobante         |
 
-### **Método createNodeRelacionados**
+### **createNodeRelacionados**
 
 Agrega el nodo `cfdi:CfdiRelacionados` al comprobante, utilizado para relacionar el CFDI actual con uno o más CFDI anteriores, como notas de crédito, devoluciones o sustituciones.
 
@@ -216,7 +197,7 @@ Puede usarse múltiples veces por comprobante.
 | tipoRelacion | "01" al "07"     | Tipo de relación con otros CFDI.         |
 | uuids        | array de strings | Lista de UUIDs de los CFDI relacionados. |
 
-### **Método createNodeEmisor**
+### **createNodeEmisor**
 
 Agrega el nodo `cfdi:Emisor` al comprobante, con los datos fiscales del emisor del CFDI. Este nodo es obligatorio y solo debe declararse una vez por comprobante.
 
@@ -238,7 +219,7 @@ Debe usarse una sola vez por comprobante.
 | regimenFiscal    | string / number | Clave vigente del regimen fiscal del emisor.                                                                                                    |
 | FacAtrAdquirente | string / number | (opcional) Número de operación proporcionado por el SAT cuando se trate de un comprobante a través del adquirente de los productos o servicios. |
 
-### **Método createNodeReceptor**
+### **createNodeReceptor**
 
 Agrega el nodo `cfdi:Receptor` al comprobante, con los datos fiscales del receptor, como RFC, nombre, uso del CFDI, etc.
 
@@ -266,7 +247,7 @@ Debe usarse una sola vez por comprobante.
 | residenciaFiscal | string          | (opcional) Clave del país de residencia del receptor en caso de ser extranjero.                  |
 | numRegIdTrib     | string / number | (opcional) Número de registro de identidad fiscal del receptor en caso de ser extranjero.        |
 
-### **Método createNodeConcepto**
+### **createNodeConcepto**
 
 Agrega un nodo `cfdi:Concepto` al comprobante que representa un producto o servicio incluido en la factura, con su cantidad, descripción, valor unitario, impuestos y demás atributos relacionados.
 
@@ -495,7 +476,7 @@ Puedes tener varios objetos dentro del array.
 | concepto            | object | Objeto referente al producto o servicio parte del concepto base.                                            |
 | informacionAduanera | array  | (opcional) Array de objetos en caso de tratarse de productos importados o movimientos de comercio exterior. |
 
-### **Método createNodeAddenda**
+### **createNodeAddenda**
 
 En caso que se requiera de colocar información que sean de utilidad al contribuyente.
 
@@ -527,3 +508,618 @@ Debe usarse una sola vez por comprobante.
 | nodes      | array  | (opcional) Coloca nodos hijos dentro del nodo base. Puede colocar mas nodos dentro de este. |
 
 NOTA: No puede usar `content` y `nodes` en el mismo nodo, por lo que si coloca ambos, ya sea por error o por descuido, el paquete omitira ambos.
+
+### **createXml**
+
+Si quieres generar el XML sin sellar puedes usar este método
+
+```javascript
+fac.createXml();
+```
+
+### **createXmlSellado**
+
+Este método genera el XML sellado.
+
+```javascript
+fac.createXmlSellado();
+```
+
+### **CatalogoSat**
+
+`CFDI-SAT-NODEJS` contiene los catalogos actualizados del SAT en formato JSON.
+
+Debido a que algunos catálogos contienen miles de registros, esta clase implementa un sistema de lectura por flujo que permite procesar los datos de forma secuencial, sin necesidad de cargar el archivo completo en memoria. Esto garantiza búsquedas optimizadas y un mejor rendimiento, incluso en archivos de gran tamaño.
+
+```javascript
+const { CatalogoSat } = require("cfdi-sat-nodejs");
+const cat = new CatalogoSat("tipo_factor");
+```
+
+### **search**
+
+Permite buscar un registro específico dentro del catálogo utilizando una combinación clave/valor. El método recorre el catálogo de forma eficiente hasta encontrar el primer resultado coincidente.
+
+Si encuentra registros que cumpla con los criterios, lo devuelve como array. Si no encuentra coincidencias o si la clave proporcionada no existe en el catálogo, devuelve un error.
+
+```javascript
+const cat = new CatalogoSat("ClaveProdServ");
+const result = await cat.search("clave", 10101500);
+
+//output
+/*
+[
+    {
+        clave: 10101500,
+        descripcion: 'Animales vivos de granja',
+        incluir_iva_trasladado: 'Opcional',
+        incluir_ieps_trasladado: 'Opcional',
+        estimulo_franja_fronteriza: 1,
+        palabras_similares: null
+    }
+]
+*/
+```
+
+LISTA DE CATALOGOS DISPONIBLES
+
+#### Aduana
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "ACAPULCO, ACAPULCO DE JUAREZ, GUERRERO."
+}
+```
+
+#### ClaveProdServ
+
+```javascript
+{
+    "clave": "01010101",
+    "descripcion": "No existe en el catálogo",
+    "incluir_iva_trasladado": "Opcional",
+    "incluir_ieps_trasladado": "Opcional",
+    "estimulo_franja_fronteriza": 0,
+    "palabras_similares": "Público en general"
+}
+```
+
+#### ClaveProdServCp
+
+```javascript
+{
+    "clave": 10101500,
+    "descripcion": "Animales vivos de granja",
+    "palabras_similares": null,
+    "material_peligroso": 0
+}
+```
+
+#### ClaveTipoCarga
+
+```javascript
+{
+    "clave": "CGS",
+    "descripcion": "Carga General Suelta"
+}
+```
+
+#### ClaveTransporte
+
+```javascript
+{
+    "clave_transporte": "01",
+    "descripcion": "Autotransporte"
+}
+```
+
+#### ClaveUnidad
+
+```javascript
+{
+    "clave": 18,
+    "nombre": "Tambor de cincuenta y cinco galones (EUA)",
+    "descripcion": null,
+    "nota": "Las unidades marcadas como borradas en el catálogo internacional de UNECE, serán retenidas indefinidamente en las listas de códigos. En su caso, estas unidades podrán ser reinstalado a través del proceso de mantenimiento.",
+    "simbolo": null
+}
+```
+
+#### ClaveUnidadPeso
+
+```javascript
+{
+    "clave": "Tu",
+    "nombre": "Contenedor externo",
+    "descripcion": "Tipo de caja de contención que sirve como contenedor de transporte externo, no especificado como equipo de transporte.",
+    "nota": null,
+    "simbolo": null,
+    "bandera": "Embalaje"
+}
+```
+
+#### CodigoPostalParteUno
+
+Abarca del CP 20000 al 64279.
+
+```javascript
+{
+    "codigo_postal": "20000",
+    "estado": "AGU",
+    "municipio": "001",
+    "localidad": "01",
+    "estimulo_franja_fronteriza": 0
+}
+```
+
+#### CodigoPostalParteDos
+
+Abarca del 65000 al 99999
+
+```javascript
+{
+    "codigo_postal": "65000",
+    "estado": "NLE",
+    "municipio": "005",
+    "localidad": null,
+    "estimulo_franja_fronteriza": 1
+}
+```
+
+#### CodigoTransporteAereo
+
+```javascript
+{
+    "clave": "CA001",
+    "nacionalidad": "Asiáticas",
+    "nombre_aerolinea": "All Nippon Airways LTD",
+    "designador_oaci": "ANA"
+}
+```
+
+#### ColoniaParteUno, ColoniaParteDos, ColoniaParteTres
+
+```javascript
+{
+    "clave": "0001",
+    "codigo_postal": "01000",
+    "nombre_asentamiento": "San Ángel"
+}
+```
+
+#### CondicionesEspeciales
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Congelados"
+}
+```
+
+#### ConfigAutoTransporte
+
+```javascript
+{
+    "clave_nomenclatura": "VL",
+    "descripcion": "Vehículo ligero de carga (2 llantas en el eje delantero y 2 llantas en el eje trasero)",
+    "numero_ejes": 2,
+    "numero_llantas": 4,
+    "remolque": "0, 1"
+}
+```
+
+#### ConfigMaritima
+
+```javascript
+{
+    "clave": "B01",
+    "descripcion": "Abastecedor"
+}
+```
+
+#### Contenedor
+
+```javascript
+{
+    "clave": "TC01",
+    "tipo_contenedor": "20'",
+    "descripcion": "Contenedor de 6.1 Mts de longitud"
+}
+```
+
+#### ContenedorMaritimo
+
+```javascript
+{
+    "clave": "CM001",
+    "descripcion": "Contenedores refrigerados de 20FT"
+}
+```
+
+#### DerechosDePaso
+
+```javascript
+{
+    "clave": "CDP001",
+    "derecho_paso": "D-1",
+    "entre": "Torreón (Km. DA-251+000) ",
+    "hasta": "Villa Juárez (Km. DA-238+000)",
+    "otorga_recibe": "Recibe",
+    "concesionario": "Vía ferrea del Noroeste (Actualmente Kansas City Southern de México, S.A de C.V.)"
+}
+```
+
+#### DocumentoAduanero
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Pedimento"
+}
+```
+
+#### Estaciones
+
+```javascript
+{
+    "clave": "PM001",
+    "descripcion": "Rosarito",
+    "clave_transporte": "02",
+    "nacionalidad": "México",
+    "designador_iata": null,
+    "linea_ferrea": null
+}
+```
+
+#### Estado
+
+```javascript
+{
+    "clave": "AGU",
+    "pais": "MEX",
+    "nombre_estado": "Aguascalientes"
+}
+```
+
+#### Exportacion
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "No aplica"
+}
+```
+
+#### FiguraTransporte
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Operador"
+}
+```
+
+#### FormaFarmaceutica
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Tableta"
+}
+```
+
+#### FormaPago
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "Efectivo",
+    "bancarizado": "No"
+}
+```
+
+#### Impuestos
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "ISR",
+    "retencion": "Si",
+    "traslado": "No"
+}
+```
+
+#### Localidad
+
+```javascript
+{
+    "localidad": "01",
+    "estado": "AGU",
+    "descripcion": "Aguascalientes"
+}
+```
+
+#### MaterialPeligroso
+
+```javascript
+{
+    "clave": "0004",
+    "descripcion": "PICRATO AMÓNICO seco o humedecido con menos del 10%, en masa, de agua",
+    "clase_div": "1.1D",
+    "peligro_secundario": null,
+    "nombre_tecnico": null
+}
+```
+
+#### Meses
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Enero"
+}
+```
+
+#### MetodoPago
+
+```javascript
+{
+    "clave": "PUE",
+    "descripcion": "Pago en una sola exhibición"
+}
+```
+
+#### Moneda
+
+```javascript
+{
+    "clave": "AED",
+    "descripcion": "Dirham de EAU",
+    "decimales": 2,
+    "porcentaje_variacion": "500%"
+}
+```
+
+#### Municipio
+
+```javascript
+{
+    "municipio": "001",
+    "estado": "AGU",
+    "descripcion": "Aguascalientes"
+}
+```
+
+#### NumAutorizacionNaviero
+
+```javascript
+{
+    "num_autorizacion": "SCT418/068/2018",
+    "inicio_vigencia": "2018-12-26",
+    "fin_vigencia": "2023-12-27"
+}
+```
+
+#### NumPedimentoAduana
+
+```javascript
+{
+    "clave": "01",
+    "patente": "3173",
+    "ejercicio": 2007,
+    "cantidad": "999999"
+}
+```
+
+#### ObjetoImp
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "No objeto de impuesto."
+}
+```
+
+#### Pais
+
+```javascript
+{
+    "clave": "MEX",
+    "descripcion": "México"
+}
+```
+
+#### ParteTransporte
+
+```javascript
+{
+    "clave": "PT01",
+    "descripcion": "Camión unitario"
+}
+```
+
+#### PatenteAduanal
+
+```javascript
+{
+    "patente": "0000"
+}
+```
+
+#### Periodicidad
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Diario"
+}
+```
+
+#### RegimenAduanero
+
+```javascript
+{
+    "clave": "IMD",
+    "descripcion": "Definitivo de importación.",
+    "importacion_exportacion": "Entrada"
+}
+```
+
+#### RegimenFiscal
+
+```javascript
+{
+    "clave": "601",
+    "descripcion": "General de Ley Personas Morales",
+    "fisica": "No",
+    "moral": "Sí"
+}
+```
+
+#### RegistroIstmo
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Coatzacoalcos I"
+}
+```
+
+#### SectorCofepris
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Medicamento"
+}
+```
+
+#### SubtipoRemolque
+
+```javascript
+{
+    "clave_remolque": "CTR001",
+    "remolque_semirremolque": "Caballete"
+}
+```
+
+#### TasaOCuota
+
+```javascript
+{
+    "tipo": "Fijo",
+    "valor_minimo": null,
+    "valor_maximo": 0,
+    "impuesto": "IVA",
+    "factor": "Tasa",
+    "traslado": "Sí",
+    "retencion": "No"
+}
+```
+
+#### TipoCarro
+
+```javascript
+{
+    "clave": "TC01",
+    "tipo_carro": "Furgón",
+    "contenedor": 0
+}
+```
+
+#### TipoDeComprobante
+
+```javascript
+{
+    "clave": "I",
+    "descripcion": "Ingreso",
+    "valor_maximo": "999999999999999999.999999"
+}
+```
+
+#### TipoDeServicio
+
+```javascript
+{
+    "clave": "TS01",
+    "descripcion": "Carros Ferroviarios",
+    "contenedor": 0
+}
+```
+
+#### TipoEmbalaje
+
+```javascript
+{
+    "clave": "1A1",
+    "descripcion": "Bidones (Tambores) de Acero 1 de tapa no desmontable"
+}
+```
+
+#### TipoEstacion
+
+```javascript
+{
+    "clave_estacion": "01",
+    "descripcion": "Origen Nacional",
+    "clave_transporte": "02, 03 y 04"
+}
+```
+
+#### TipoFactor
+
+```javascript
+{
+    "descripcion": "Tasa"
+}
+```
+
+#### TipoMateria
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Materia prima"
+}
+```
+
+#### TipoPermiso
+
+```javascript
+{
+    "clave": "TPAF01",
+    "descripcion": "Autotransporte Federal de carga general.",
+    "clave_transporte": "01"
+}
+```
+
+#### TipoRelacion
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Nota de crédito de los documentos relacionados"
+}
+```
+
+#### TipoTrafico
+
+```javascript
+{
+    "clave": "TT01",
+    "descripcion": "Tráfico local"
+}
+```
+
+#### UsoCfdi
+
+```javascript
+{
+    "clave": "G01",
+    "descripcion": "Adquisición de mercancías.",
+    "fisica": "Sí",
+    "moral": "Sí",
+    "regimen_receptor": "601, 603, 606, 612, 620, 621, 622, 623, 624, 625,626"
+}
+```

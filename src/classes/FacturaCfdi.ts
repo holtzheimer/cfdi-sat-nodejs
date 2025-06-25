@@ -251,9 +251,7 @@ class FacturaCfdi {
       Fecha: this.node_comprobante.fecha,
       SubTotal: parseFloat(this.node_comprobante.subtotal.toString()).toFixed(2),
       Moneda: this.node_comprobante.moneda ?? "MXN",
-      FormaPago: this.node_comprobante.formaPago,
       Total: parseFloat(this.node_comprobante.total.toString()).toFixed(2),
-      MetodoPago: this.node_comprobante.metodoPago,
       TipoDeComprobante: this.node_comprobante.tipoDeComprobante ?? "I",
       LugarExpedicion: this.node_comprobante.lugarExpedicion,
       NoCertificado: this.config_cfdi.getCert().noCertificado,
@@ -264,6 +262,12 @@ class FacturaCfdi {
         .replace(/(\r\n|\n|\r)/gm, ""),
       Exportacion: this.node_comprobante.exportacion ?? "01",
     };
+    if ("formaPago" in this.node_comprobante && this.node_comprobante.tipoDeComprobante !== "T") {
+      node_comprobante.FormaPago = this.node_comprobante.formaPago;
+    }
+    if ("metodoPago" in this.node_comprobante && this.node_comprobante.tipoDeComprobante !== "T") {
+      node_comprobante.MetodoPago = this.node_comprobante.metodoPago;
+    }
     if ("tipoCambio" in this.node_comprobante && node_comprobante.Moneda !== "MXN") {
       node_comprobante.TipoCambio = this.node_comprobante.tipoCambio;
     }

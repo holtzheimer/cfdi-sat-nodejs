@@ -3,9 +3,9 @@ export interface INodeComprobante {
   folio: string;
   fecha: string;
   subtotal: string | number;
-  formaPago: string | number;
+  formaPago?: string | number;
   total: string | number;
-  metodoPago: "PUE" | "PPD";
+  metodoPago?: "PUE" | "PPD";
   lugarExpedicion: string | number;
   tipoDeComprobante?: "I" | "E" | "T";
   moneda?: string;
@@ -24,9 +24,9 @@ export interface IObjectNodeComprobante {
   Fecha: string;
   SubTotal: string | number;
   Moneda: string;
-  FormaPago: string | number;
+  FormaPago?: string | number;
   Total: string | number;
-  MetodoPago: "PUE" | "PPD";
+  MetodoPago?: "PUE" | "PPD";
   TipoDeComprobante: "I" | "E" | "T";
   LugarExpedicion: string | number;
   NoCertificado: string;
