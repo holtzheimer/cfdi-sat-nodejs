@@ -23,7 +23,7 @@ export interface INodeUbicacion {
   ubicacion: INodeUbi;
   domicilio?: INodeUbiDomicilio;
 }
-interface INodeUbi {
+export interface INodeUbi {
   tipoUbicacion: "Origen" | "Destino";
   rfcRemitenteDestinatario: string;
   fechaHoraSalidaLlegada: string;
@@ -38,18 +38,19 @@ interface INodeUbi {
   distanciaRecorrida?: string | number;
 }
 export interface IObjectNodeUbi {
-  TipoUbicacion: "Origen" | "Destino";
-  RFCRemitenteDestinatario: string;
-  FechaHoraSalidaLlegada: string;
-  IDUbicacion?: string;
-  NombreRemitenteDestinatario?: string;
-  ResidenciaFiscal?: string;
-  NumRegIdTrib?: string | number;
-  NumEstacion?: string;
-  NombreEstacion?: string;
-  NavegacionTrafico?: string;
-  TipoEstacion?: string;
-  DistanciaRecorrida?: string | number;
+  "@_TipoUbicacion": "Origen" | "Destino";
+  "@_RFCRemitenteDestinatario": string;
+  "@_FechaHoraSalidaLlegada": string;
+  "@_IDUbicacion"?: string;
+  "@_NombreRemitenteDestinatario"?: string;
+  "@_ResidenciaFiscal"?: string;
+  "@_NumRegIdTrib"?: string | number;
+  "@_NumEstacion"?: string;
+  "@_NombreEstacion"?: string;
+  "@_NavegacionTrafico"?: string;
+  "@_TipoEstacion"?: string;
+  "@_DistanciaRecorrida"?: string | number;
+  "cartaporte31:Domicilio"?: IObjectNodeUbiDomicilio;
 }
 interface INodeUbiDomicilio {
   estado: string;
@@ -91,6 +92,7 @@ export interface IObjectNodeMercancias {
   "@_PesoNetoTotal"?: string | number;
   "@_CargoPorTasacion"?: string;
   "cartaporte31:Mercancia": IObjectNodeMerc[];
+  "cartaporte31:Autotransporte"?: IObjectNodeAutotransporte;
 }
 export interface INodeMercancia {
   mercancia: INodeMerc;
@@ -235,11 +237,24 @@ export interface INodeAutotransporte {
   permSct: string;
   numPermisoSct: string;
 }
+export interface IObjectNodeAutotransporte {
+  "@_PermSCT": string;
+  "@_NumPermisoSCT": string;
+  "cartaporte31:IdentificacionVehicular": IObjectNodeIdenVehicular;
+  "cartaporte31:Seguros": IObjectNodeSeguros;
+  "cartaporte31:Remolques"?: { "cartaporte31:Remolque": IObjectNodeRemolques[] };
+}
 export interface INodeIdenVehicular {
   configVehicular: string;
   pesoBrutoVehicular: string;
   placaVm: string;
   anioModeloVm: string | number;
+}
+export interface IObjectNodeIdenVehicular {
+  "@_ConfigVehicular": string;
+  "@_PesoBrutoVehicular": string;
+  "@_PlacaVM": string;
+  "@_AnioModeloVM": string | number;
 }
 export interface INodeSeguros {
   aseguraRespCivil: string;
@@ -250,9 +265,22 @@ export interface INodeSeguros {
   polizaCarga?: string;
   primaSeguro?: string;
 }
+export interface IObjectNodeSeguros {
+  "@_AseguraRespCivil": string;
+  "@_PolizaRespCivil": string;
+  "@_AseguraMedAmbiente"?: string;
+  "@_PolizaMedAmbiente"?: string;
+  "@_AseguraCarga"?: string;
+  "@_PolizaCarga"?: string;
+  "@_PrimaSeguro"?: string;
+}
 export interface INodeRemolques {
   subTipoRem: string;
   placa: string;
+}
+export interface IObjectNodeRemolques {
+  "@_SubTipoRem": string;
+  "@_Placa": string;
 }
 
 export interface INodeTipoFigura {
@@ -260,7 +288,7 @@ export interface INodeTipoFigura {
   partesTransporte?: INodeParteTrans[];
   domicilio?: INodeTFDomicilio;
 }
-interface INodeTF {
+export interface INodeTF {
   tipoFigura: string;
   rfcFigura?: string;
   numLicencia?: string;
@@ -268,7 +296,21 @@ interface INodeTF {
   numRegIdTribFigura?: string;
   residenciaFiscalFigura?: string;
 }
-interface INodeParteTrans {
+export interface IObjectNodeTF {
+  "@_TipoFigura": string;
+  "@_RFCFigura"?: string;
+  "@_NumLicencia"?: string;
+  "@_NombreFigura": string;
+  "@_NumRegIdTribFigura"?: string;
+  "@_ResidenciaFiscalFigura"?: string;
+  "cartaporte31:Domicilio": IObjectTFDomicilio;
+  "cartaporte31:PartesTransporte": IObjectNodeParteTrans[];
+}
+export interface INodeParteTrans {
   parteTransporte: string;
 }
-interface INodeTFDomicilio extends INodeUbiDomicilio {}
+export interface IObjectNodeParteTrans {
+  "@_ParteTransporte": string;
+}
+export interface INodeTFDomicilio extends INodeUbiDomicilio {}
+export interface IObjectTFDomicilio extends IObjectNodeUbiDomicilio {}

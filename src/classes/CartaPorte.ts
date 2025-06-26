@@ -15,9 +15,17 @@ import {
   IObjectNodeDocAduanera,
   IObjectNodeGuiasIdent,
   IObjectNodeDetMercancia,
+  IObjectNodeAutotransporte,
+  IObjectNodeSeguros,
+  IObjectNodeTF,
+  IObjectTFDomicilio,
+  IObjectNodeUbi,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";
 import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } from "../utils/mercancia_keys";
+import { auto_seguros_keys } from "../utils/autotransporte_keys";
+import { tipos_figura_domicilio, tipos_figura_keys } from "../utils/tipos_figura_keys";
+import { ubicacion_keys } from "../utils/ubicacion_keys";
 
 abstract class CartaPorte {
   private readonly cfdi: string | object;
@@ -47,10 +55,7 @@ abstract class CartaPorte {
     aseguraRespCivil: "",
     polizaRespCivil: "",
   };
-  private node_autotransporte_remolques: INodeRemolques = {
-    placa: "",
-    subTipoRem: "",
-  };
+  private readonly node_autotransporte_remolques: INodeRemolques[] = [];
   private readonly node_tipo_figura: INodeTipoFigura[] = [];
 
   constructor(cfdi: string | object) {
@@ -78,7 +83,7 @@ abstract class CartaPorte {
     const json = this.generateXml();
     return Utils.jsonToXml(json);
   }
-  public async createXmlSellado() {}
+  //public async createXmlSellado() {}
   private generateXml() {
     let json = this.cfdi as any;
     if (typeof this.cfdi === "string") {
@@ -92,8 +97,8 @@ abstract class CartaPorte {
     if (this.node_ubicaciones.length > 0) {
       nodeCartaPorteAttrs["cartaporte31:Ubicaciones"] = this.generateNodeUbicaciones();
     }
-    const node_mercancias = this.generateNodeMercancias();
-    nodeCartaPorteAttrs["cartaporte31:Mercancias"] = node_mercancias;
+    nodeCartaPorteAttrs["cartaporte31:Mercancias"] = this.generateNodeMercancias();
+    nodeCartaPorteAttrs["cartaporte31:FiguraTransporte"] = this.generateNodeFiguraTranporte();
     const node_carta_porte = {
       "cartaporte31:CartaPorte": nodeCartaPorteAttrs,
     };
@@ -138,66 +143,20 @@ abstract class CartaPorte {
   private generateNodeUbicaciones() {
     return {
       "cartaporte31:Ubicacion": this.node_ubicaciones.map((r) => {
-        let node: any = {
-          "@_TipoUbicacion": r.ubicacion.tipoUbicacion,
-          "@_RFCRemitenteDestinatario": r.ubicacion.rfcRemitenteDestinatario,
-          "@_FechaHoraSalidaLlegada": r.ubicacion.fechaHoraSalidaLlegada,
-        };
-        if ("idUbicacion" in r.ubicacion) {
-          node["@_IDUbicacion"] = r.ubicacion.idUbicacion;
-        }
-        if ("nombreRemitenteDestinatario" in r.ubicacion) {
-          node["@_NombreRemitenteDestinatario"] = r.ubicacion.nombreRemitenteDestinatario;
-        }
-        if ("residenciaFiscal" in r.ubicacion) {
-          node["@_ResidenciaFiscal"] = r.ubicacion.residenciaFiscal;
-        }
-        if ("numRegIdTrib" in r.ubicacion) {
-          node["@_NumRegIdTrib"] = r.ubicacion.numRegIdTrib;
-        }
-        if ("numEstacion" in r.ubicacion) {
-          node["@_NumEstacion"] = r.ubicacion.numEstacion;
-        }
-        if ("nombreEstacion" in r.ubicacion) {
-          node["@_NombreEstacion"] = r.ubicacion.nombreEstacion;
-        }
-        if ("navegacionTrafico" in r.ubicacion) {
-          node["@_NavegacionTrafico"] = r.ubicacion.navegacionTrafico;
-        }
-        if ("tipoEstacion" in r.ubicacion) {
-          node["@_TipoEstacion"] = r.ubicacion.tipoEstacion;
-        }
-        if ("distanciaRecorrida" in r.ubicacion) {
-          node["@_DistanciaRecorrida"] = r.ubicacion.distanciaRecorrida;
+        const node = {} as Partial<IObjectNodeUbi>;
+        for (const uk of ubicacion_keys) {
+          if (r.ubicacion[uk.entrada]) {
+            node[uk.salida] = r.ubicacion[uk.entrada] as any;
+          }
         }
         if ("domicilio" in r) {
-          const node_dom: IObjectNodeUbiDomicilio = {
-            "@_Estado": r.domicilio!.estado,
-            "@_Pais": r.domicilio!.pais,
-            "@_CodigoPostal": r.domicilio!.codigoPostal,
-          };
-          if ("calle" in r.domicilio!) {
-            node_dom["@_Calle"] = r.domicilio.calle;
+          const node_dom = {} as Partial<IObjectNodeUbiDomicilio>;
+          for (const ud of tipos_figura_domicilio) {
+            if (r.domicilio![ud.entrada]) {
+              node_dom[ud.salida] = r.domicilio![ud.entrada] as any;
+            }
           }
-          if ("numeroExterior" in r.domicilio!) {
-            node_dom["@_NumeroExterior"] = r.domicilio.numeroExterior;
-          }
-          if ("numeroInterior" in r.domicilio!) {
-            node_dom["@_NumeroInterior"] = r.domicilio.numeroInterior;
-          }
-          if ("colonia" in r.domicilio!) {
-            node_dom["@_Colonia"] = r.domicilio.colonia;
-          }
-          if ("localidad" in r.domicilio!) {
-            node_dom["@_Localidad"] = r.domicilio.localidad;
-          }
-          if ("referencia" in r.domicilio!) {
-            node_dom["@_Referencia"] = r.domicilio.referencia;
-          }
-          if ("municipio" in r.domicilio!) {
-            node_dom["@_Municipio"] = r.domicilio.municipio;
-          }
-          node["cartaporte31:Domicilio"] = node_dom;
+          node["cartaporte31:Domicilio"] = node_dom as IObjectNodeUbiDomicilio;
         }
         return node;
       }),
@@ -266,7 +225,66 @@ abstract class CartaPorte {
       }
       return node as IObjectNodeMerc;
     });
+    if (this.node_autotransporte.permSct !== "" && this.node_autotransporte.numPermisoSct !== "") {
+      att["cartaporte31:Autotransporte"] = this.generateNodeAutotransporte();
+    }
     return att as IObjectNodeMercancias;
+  }
+  private generateNodeAutotransporte(): IObjectNodeAutotransporte {
+    const node_att_seguros = {} as Partial<IObjectNodeSeguros>;
+    for (const ask of auto_seguros_keys) {
+      if (this.node_autotransporte_seguros[ask.entrada]) {
+        node_att_seguros[ask.salida] = this.node_autotransporte_seguros[ask.entrada] as any;
+      }
+    }
+    const node: IObjectNodeAutotransporte = {
+      "@_PermSCT": this.node_autotransporte.permSct,
+      "@_NumPermisoSCT": this.node_autotransporte.numPermisoSct,
+      "cartaporte31:IdentificacionVehicular": {
+        "@_AnioModeloVM": this.node_identificacion_vehicular.anioModeloVm,
+        "@_ConfigVehicular": this.node_identificacion_vehicular.configVehicular,
+        "@_PesoBrutoVehicular": this.node_identificacion_vehicular.pesoBrutoVehicular,
+        "@_PlacaVM": this.node_identificacion_vehicular.placaVm,
+      },
+      "cartaporte31:Seguros": node_att_seguros as IObjectNodeSeguros,
+    };
+    if (this.node_autotransporte_remolques.length > 0) {
+      node["cartaporte31:Remolques"] = {
+        "cartaporte31:Remolque": this.node_autotransporte_remolques.map((r) => ({
+          "@_SubTipoRem": r.subTipoRem,
+          "@_Placa": r.placa,
+        })),
+      };
+    }
+    return node;
+  }
+  private generateNodeFiguraTranporte() {
+    const node: { "cartaporte31:TiposFigura": IObjectNodeTF[] } = {
+      "cartaporte31:TiposFigura": this.node_tipo_figura.map((tf) => {
+        const node_att = {} as Partial<IObjectNodeTF>;
+        for (const tfk of tipos_figura_keys) {
+          if (tf.tipoFigura[tfk.entrada]) {
+            node_att[tfk.salida] = tf.tipoFigura[tfk.entrada] as any;
+          }
+        }
+        if ("domicilio" in tf) {
+          const node_att_dom = {} as Partial<IObjectTFDomicilio>;
+          for (const tfd of tipos_figura_domicilio) {
+            if (tf.domicilio![tfd.entrada]) {
+              node_att_dom[tfd.salida] = tf.domicilio![tfd.entrada] as any;
+            }
+          }
+          node_att["cartaporte31:Domicilio"] = node_att_dom as IObjectTFDomicilio;
+        }
+        if ("partesTransporte" in tf) {
+          node_att["cartaporte31:PartesTransporte"] = tf.partesTransporte!.map((pt) => ({
+            "@_ParteTransporte": pt.parteTransporte,
+          }));
+        }
+        return node_att as IObjectNodeTF;
+      }),
+    };
+    return node;
   }
   protected setNodeAutotransporteData(data: INodeAutotransporte) {
     this.node_autotransporte = data;
@@ -278,7 +296,7 @@ abstract class CartaPorte {
     this.node_autotransporte_seguros = data;
   }
   protected setNodeAutotransporteRemolques(data: INodeRemolques) {
-    this.node_autotransporte_remolques = data;
+    this.node_autotransporte_remolques.push(data);
   }
 }
 export default CartaPorte;
