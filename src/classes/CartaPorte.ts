@@ -85,27 +85,24 @@ abstract class CartaPorte {
     this.node_tipo_figura.push(data);
   }
   public async createXmlSellado() {
-    const json = this.generateJson();
-    const xml = Utils.jsonToXml(json);
-
-    return generateCadenaOriginal(xml, this.config_cfdi)
-      .then((sign) => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xml, "application/xml");
-        const comprobanteElement = xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
-        if (comprobanteElement) {
-          comprobanteElement.setAttribute("Sello", sign);
-        }
-        const serializer = new XMLSerializer();
-        return serializer.serializeToString(xmlDoc);
-      })
-      .catch((err) => {
-        throw new Error(err.message);
-      });
+    try {
+      const json = this.generateJson();
+      const sign = await generateCadenaOriginal(json, this.config_cfdi);
+      json["cfdi:Comprobante"]["@_Sello"] = sign;
+      return Utils.jsonToXml(json);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
-  public createJson(simplified = false) {
-    const { ["?xml"]: _omit, ...rest } = this.generateJson();
-    return simplified ? this.simplifyJson(rest) : rest;
+  public async createJsonSellado(simplified = false) {
+    try {
+      const { ["?xml"]: _omit, ...rest } = this.generateJson();
+      const sign = await generateCadenaOriginal(rest, this.config_cfdi);
+      rest["cfdi:Comprobante"]["@_Sello"] = sign;
+      return simplified ? this.simplifyJson(rest) : rest;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
   //public async createXmlSellado() {}
   private generateJson() {

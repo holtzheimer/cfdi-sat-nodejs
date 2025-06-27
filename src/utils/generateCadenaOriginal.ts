@@ -2,9 +2,11 @@ import resolveInclusions from "./resolveInclusions";
 import SaxonJS from "saxon-js";
 import crypto from "crypto";
 import ConfigCfdi from "../classes/ConfigCfdi";
+import Utils from "../classes/Utils";
 
-const generateCadenaOriginal = async (xml: string, config_cfdi: ConfigCfdi): Promise<string> => {
+const generateCadenaOriginal = async (cfdi: string | object, config_cfdi: ConfigCfdi): Promise<string> => {
   try {
+    const xml = typeof cfdi === "object" ? Utils.jsonToXml(cfdi) : cfdi;
     const cadenaOriginalXslt = await resolveInclusions();
 
     let result = SaxonJS.XPath.evaluate(

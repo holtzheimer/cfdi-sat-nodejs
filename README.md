@@ -1604,7 +1604,7 @@ await cartaporte.createXmlSellado();
 Si requiere el CFDI con complemento carta porte en un objeto JSON use este método.
 
 ```javascript
-cartaporte.createJsonSellado(simplified);
+await cartaporte.createJsonSellado(simplified);
 ```
 
 | Argumento  | Tipo    | Descripción                                                                                                                                                          |
