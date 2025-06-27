@@ -14,8 +14,8 @@ class Utils {
     });
     return builder.build(json);
   }
-  public static generateUUID(): string {
-    return uuidv4();
+  public static generateUuid(): string {
+    return uuidv4().toLowerCase();
   }
   public static sanitizeText(text: string): string {
     return text

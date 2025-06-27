@@ -7,6 +7,7 @@ export interface ICartaPorte {
   registroISTMO?: "Sí" | "No";
   ubicacionPoloOrigen?: string;
   ubicacionPoloDestino?: string;
+  viaEntradaSalida?: string;
 }
 export interface IObjectCartaPorte {
   "@_IdCCP": string;
@@ -18,6 +19,7 @@ export interface IObjectCartaPorte {
   "@_RegistroISTMO"?: "Sí" | "No";
   "@_UbicacionPoloOrigen"?: string;
   "@_UbicacionPoloDestino"?: string;
+  "@_ViaEntradaSalida"?: string;
 }
 export interface INodeUbicacion {
   ubicacion: INodeUbi;
@@ -33,7 +35,7 @@ export interface INodeUbi {
   numRegIdTrib?: string | number;
   numEstacion?: string;
   nombreEstacion?: string;
-  navegacionTrafico?: string;
+  navegacionTrafico?: "Altura" | "Cabotaje";
   tipoEstacion?: string;
   distanciaRecorrida?: string | number;
 }
@@ -47,7 +49,7 @@ export interface IObjectNodeUbi {
   "@_NumRegIdTrib"?: string | number;
   "@_NumEstacion"?: string;
   "@_NombreEstacion"?: string;
-  "@_NavegacionTrafico"?: string;
+  "@_NavegacionTrafico"?: "Altura" | "Cabotaje";
   "@_TipoEstacion"?: string;
   "@_DistanciaRecorrida"?: string | number;
   "cartaporte31:Domicilio"?: IObjectNodeUbiDomicilio;
@@ -137,7 +139,7 @@ export interface INodeMerc {
   valorMercancia?: string;
   moneda?: string;
   fraccionArancelaria?: string;
-  UuidComercioExt?: string;
+  uuidComercioExt?: string;
   tipoMateria?: string;
   descripcionMateria?: string;
 }
@@ -198,12 +200,12 @@ export interface IObjectNodeDocAduanera {
   "@_RFCImpo"?: string;
 }
 export interface INodeGuiasIdent {
-  numeroGuiaIdentificacion: string | number;
+  numeroGuiaIdentificacion: string;
   descripGuiaIdentificacion: string;
   pesoGuiaIdentificacion: string | number;
 }
 export interface IObjectNodeGuiasIdent {
-  "@_NumeroGuiaIdentificacion": string | number;
+  "@_NumeroGuiaIdentificacion": string;
   "@_DescripGuiaIdentificacion": string;
   "@_PesoGuiaIdentificacion": string | number;
 }
@@ -214,10 +216,10 @@ export interface INodeCantTransporta {
   cvesTransporte?: string | number;
 }
 export interface IObjectNodeCantTransporta {
-  "@_cantidad": string | number;
-  "@_idOrigen": string;
-  "@_idDestino": string;
-  "@_cvesTransporte"?: string | number;
+  "@_Cantidad": string | number;
+  "@_IDOrigen": string;
+  "@_IDDestino": string;
+  "@_CvesTransporte"?: string | number;
 }
 export interface INodeDetMercancia {
   unidadPesoMerc: string;
@@ -246,13 +248,13 @@ export interface IObjectNodeAutotransporte {
 }
 export interface INodeIdenVehicular {
   configVehicular: string;
-  pesoBrutoVehicular: string;
+  pesoBrutoVehicular: string | number;
   placaVm: string;
   anioModeloVm: string | number;
 }
 export interface IObjectNodeIdenVehicular {
   "@_ConfigVehicular": string;
-  "@_PesoBrutoVehicular": string;
+  "@_PesoBrutoVehicular": string | number;
   "@_PlacaVM": string;
   "@_AnioModeloVM": string | number;
 }
@@ -289,10 +291,10 @@ export interface INodeTipoFigura {
   domicilio?: INodeTFDomicilio;
 }
 export interface INodeTF {
+  nombreFigura: string;
   tipoFigura: string;
   rfcFigura?: string;
   numLicencia?: string;
-  nombreFigura: string;
   numRegIdTribFigura?: string;
   residenciaFiscalFigura?: string;
 }

@@ -20,12 +20,10 @@ import {
   IObjectNodeRetencion,
   IObjectNodeTraslado,
 } from "../interfaces/IFacturaCfdi";
-import resolveInclusions from "../utils/resolveInclusions";
 import ConfigCfdi from "./ConfigCfdi";
 import { create } from "xmlbuilder2";
-import SaxonJS from "saxon-js";
-import crypto from "crypto";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
+import generateCadenaOriginal from "../utils/generateCadenaOriginal";
 
 class FacturaCfdi {
   private readonly config_cfdi: ConfigCfdi;
@@ -93,7 +91,7 @@ class FacturaCfdi {
   }
   public async createXmlSellado() {
     const xml = this.generateXml();
-    return this.generateCadenaOriginal(xml)
+    return generateCadenaOriginal(xml, this.config_cfdi)
       .then((sign) => {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xml, "application/xml");
@@ -431,35 +429,6 @@ class FacturaCfdi {
       }
     }
     return imp_obj;
-  }
-  private async generateCadenaOriginal(xml: string): Promise<string> {
-    try {
-      const cadenaOriginalXslt = await resolveInclusions();
-
-      let result = SaxonJS.XPath.evaluate(
-        `transform(
-        map {
-          'source-node' : parse-xml($xml),
-          'stylesheet-text' : $xslt,
-          'delivery-format' : 'serialized'
-          }
-      )?output`,
-        [],
-        {
-          params: {
-            xml: xml,
-            xslt: cadenaOriginalXslt,
-          },
-        }
-      );
-      const sign = crypto.createSign("SHA256");
-      sign.update(result);
-      sign.end();
-      const signature = sign.sign(this.config_cfdi.getKeyPem(), "base64");
-      return signature;
-    } catch (error) {
-      throw new Error(`Error generating Cadena Original: ${error}`);
-    }
   }
 }
 export default FacturaCfdi;

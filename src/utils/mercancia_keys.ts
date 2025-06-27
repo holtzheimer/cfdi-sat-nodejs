@@ -53,7 +53,7 @@ export const mercancia_keys: { entrada: keyof INodeMerc; salida: keyof IObjectNo
   { entrada: "valorMercancia", salida: "@_ValorMercancia" },
   { entrada: "moneda", salida: "@_Moneda" },
   { entrada: "fraccionArancelaria", salida: "@_FraccionArancelaria" },
-  { entrada: "UuidComercioExt", salida: "@_UUIDComercioExt" },
+  { entrada: "uuidComercioExt", salida: "@_UUIDComercioExt" },
   { entrada: "tipoMateria", salida: "@_TipoMateria" },
   { entrada: "descripcionMateria", salida: "@_DescripcionMateria" },
 ];

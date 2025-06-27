@@ -26,9 +26,13 @@ import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } fr
 import { auto_seguros_keys } from "../utils/autotransporte_keys";
 import { tipos_figura_domicilio, tipos_figura_keys } from "../utils/tipos_figura_keys";
 import { ubicacion_keys } from "../utils/ubicacion_keys";
+import generateCadenaOriginal from "../utils/generateCadenaOriginal";
+import ConfigCfdi from "./ConfigCfdi";
+import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
 abstract class CartaPorte {
   private readonly cfdi: string | object;
+  private readonly config_cfdi: ConfigCfdi;
   private attributes: ICartaPorte = {
     idCcp: "",
     transpInternac: "No",
@@ -58,8 +62,9 @@ abstract class CartaPorte {
   private readonly node_autotransporte_remolques: INodeRemolques[] = [];
   private readonly node_tipo_figura: INodeTipoFigura[] = [];
 
-  constructor(cfdi: string | object) {
+  constructor(cfdi: string | object, config_cfdi: ConfigCfdi) {
     this.cfdi = cfdi;
+    this.config_cfdi = config_cfdi;
   }
   public setAttributes(data: ICartaPorte): void {
     this.attributes = data;
@@ -79,16 +84,39 @@ abstract class CartaPorte {
   public createNodeTipoFigura(data: INodeTipoFigura) {
     this.node_tipo_figura.push(data);
   }
-  public createXml() {
-    const json = this.generateXml();
-    return Utils.jsonToXml(json);
+  public async createXmlSellado() {
+    const json = this.generateJson();
+    const xml = Utils.jsonToXml(json);
+
+    return generateCadenaOriginal(xml, this.config_cfdi)
+      .then((sign) => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xml, "application/xml");
+        const comprobanteElement = xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
+        if (comprobanteElement) {
+          comprobanteElement.setAttribute("Sello", sign);
+        }
+        const serializer = new XMLSerializer();
+        return serializer.serializeToString(xmlDoc);
+      })
+      .catch((err) => {
+        throw new Error(err.message);
+      });
+  }
+  public createJson(simplified = false) {
+    const { ["?xml"]: _omit, ...rest } = this.generateJson();
+    return simplified ? this.simplifyJson(rest) : rest;
   }
   //public async createXmlSellado() {}
-  private generateXml() {
+  private generateJson() {
     let json = this.cfdi as any;
     if (typeof this.cfdi === "string") {
       json = Utils.xmlToJson(this.cfdi);
     }
+    json["cfdi:Comprobante"][
+      "@_xsi:schemaLocation"
+    ] = `${json["cfdi:Comprobante"]["@_xsi:schemaLocation"]} http://www.sat.gob.mx/CartaPorte31 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte31.xsd`;
+    json["cfdi:Comprobante"]["@_xmlns:cartaporte31"] = "http://www.sat.gob.mx/CartaPorte31";
     const nodeCartaPorteAttrs = this.generateAttribute();
 
     if (this.node_regimenes_aduaneros.length > 0) {
@@ -102,10 +130,27 @@ abstract class CartaPorte {
     const node_carta_porte = {
       "cartaporte31:CartaPorte": nodeCartaPorteAttrs,
     };
-    if (!("cfdi:Complemento" in json)) {
-      json["cfdi:Complemento"] = node_carta_porte;
+    if (!json["cfdi:Comprobante"]["cfdi:Complemento"]) {
+      json["cfdi:Comprobante"]["cfdi:Complemento"] = node_carta_porte;
+    } else {
+      Object.assign(json["cfdi:Comprobante"]["cfdi:Complemento"], node_carta_porte);
     }
     return json;
+  }
+  private simplifyJson(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.simplifyJson(item));
+    } else if (typeof obj === "object" && obj !== null) {
+      const simplified: any = {};
+      for (const key in obj) {
+        let newKey = key;
+        if (newKey.startsWith("@_")) newKey = newKey.slice(2);
+        if (newKey.includes(":")) newKey = newKey.split(":")[1];
+        simplified[newKey] = this.simplifyJson(obj[key]);
+      }
+      return simplified;
+    }
+    return obj;
   }
   private generateAttribute() {
     const att: any = {
@@ -130,6 +175,9 @@ abstract class CartaPorte {
     }
     if ("ubicacionPoloDestino" in this.attributes) {
       att["@_UbicacionPoloDestino"] = this.attributes.ubicacionPoloDestino;
+    }
+    if ("viaEntradaSalida" in this.attributes) {
+      att["@_ViaEntradaSalida"] = this.attributes.viaEntradaSalida;
     }
     return att;
   }
@@ -201,12 +249,12 @@ abstract class CartaPorte {
       if ("cantidadTransporta" in i && i.cantidadTransporta!.length > 0) {
         node["cartaporte31:CantidadTransporta"] = i.cantidadTransporta!.map((ct) => {
           const ct_node: IObjectNodeCantTransporta = {
-            "@_cantidad": ct.cantidad,
-            "@_idOrigen": ct.idOrigen,
-            "@_idDestino": ct.idDestino,
+            "@_Cantidad": ct.cantidad,
+            "@_IDOrigen": ct.idOrigen,
+            "@_IDDestino": ct.idDestino,
           };
           if ("cvesTransporte" in ct) {
-            ct_node["@_cvesTransporte"] = ct.cvesTransporte;
+            ct_node["@_CvesTransporte"] = ct.cvesTransporte;
           }
           return ct_node;
         });
@@ -243,7 +291,7 @@ abstract class CartaPorte {
       "cartaporte31:IdentificacionVehicular": {
         "@_AnioModeloVM": this.node_identificacion_vehicular.anioModeloVm,
         "@_ConfigVehicular": this.node_identificacion_vehicular.configVehicular,
-        "@_PesoBrutoVehicular": this.node_identificacion_vehicular.pesoBrutoVehicular,
+        "@_PesoBrutoVehicular": this.node_identificacion_vehicular.pesoBrutoVehicular.toString(),
         "@_PlacaVM": this.node_identificacion_vehicular.placaVm,
       },
       "cartaporte31:Seguros": node_att_seguros as IObjectNodeSeguros,

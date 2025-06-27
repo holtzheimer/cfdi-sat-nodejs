@@ -1,3 +1,8 @@
+## ⚠️ Aviso Importante
+
+Este paquete ha sido reescrito desde cero. Las versiones anteriores a la 3.0 no son compatibles con la nueva versión.
+Si planeas actualizar, asegúrate de leer la documentación actual para adaptar tu código correctamente.
+
 # PAQUETE CFDI SAT PARA NODEJS
 
 ### Herramienta para generar y manejar CFDI 4.0. Incluye utilidades para trabajar con certificados digitales, generar XML o JSON sellados y sin sellar, consultar catálogos del SAT eficientemente, convertir XML a JSON y más. Ideal para desarrolladores que necesitan generar facturas electrónicas válidas para el SAT.
@@ -9,6 +14,13 @@
 - [ConfigCfdi](#ConfigCfdi)
   - [getCert](#getCert)
   - [getKeyPem](#getKeyPem)
+- [Utils](#Utils)
+  - [xmlToJson](#xmlToJson)
+  - [jsonToXml](#jsonToXml)
+  - [generateUuid](#generateUuid)
+  - [sanitizeText](#sanitizeText)
+  - [dateCurrent](#dateCurrent)
+  - [generateIdCcp](#generateIdCcp)
 - [FacturaCfdi](#FacturaCfdi)
   - [createNodeComprobante](#createNodeComprobante)
   - [createNodeInformacionGlobal](#createNodeInformacionGlobal)
@@ -21,9 +33,21 @@
   - [createXmlSellado](#createXmlSellado)
 - [CatalogoSat](#CatalogoSat)
   - [search](#search)
+- [CartaPorte](#CartaPorte)
+  - [setAttributes](#setAttributes)
+  - [createNodeRegimenesAduaneros](#createNodeRegimenesAduaneros)
+  - [createNodeUbicacion](#createNodeUbicacion)
+  - [createNodeMercancias](#createNodeMercancias)
+  - [createNodeMercancia](#createNodeMercancia)
+  - [createNodeTipoFigura](#createNodeTipoFigura)
+  - [createXmlSellado](#createXmlSellado-1)
+  - [createJsonSellado](#createJsonSellado-1)
 - [CartaPorteAutotransporte](#CartaPorteAutotransporte)
+  - [createNodeAutotransporte](#createNodeAutotransporte)
+  - [createNodeIdentificacionVehicular](#createNodeIdentificacionVehicular)
+  - [createNodeRemolques](#createNodeRemolques)
 
-### **Instalación**
+## **Instalación**
 
 Puede instalar mediante NPM
 
@@ -31,7 +55,7 @@ Puede instalar mediante NPM
 npm install --save cfdi-sat-nodejs
 ```
 
-### **Importación**
+## **Importación**
 
 Para empezar a usar cfdi-sat-nodejs primero importa la clase ConfigCfdi
 
@@ -42,7 +66,7 @@ import { ConfigCfdi } from "cfdi-sat-nodejs"; // si usas ESM
 const config = new ConfigCfdi();
 ```
 
-### **ConfigCfdi**
+## **ConfigCfdi**
 
 La clase ConfigCfdi permite configurar las rutas de tu certificado digital, la clave privada y la contraseña proporcionados por el SAT para generar sellos digitales necesarios para firmar el comprobante.
 
@@ -101,7 +125,68 @@ console.log(key);
 // OUTPUT: "-----BEGIN ENCRYPTED PRIVATE KEY----- MIIF... -----END ENCRYPTED PRIVATE KEY-----";
 ```
 
-### **FacturaCfdi**
+## **Utils**
+
+Esta clase contiene varios métodos que puede usar según sus necesidades.
+
+### **xmlToJson**
+
+Convierte un XML a JSON
+
+```javascript
+Utils.xmlToJson(xml, simplified);
+```
+
+| Argumento  | Tipo    | Descripción                                                                                                                                                          |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| xml        | string  | Contenido del cfdi/xml                                                                                                                                               |
+| simplified | boolean | (opcional) Si se establece en `true`, genera un JSON más limpio sin prefijos (como `"cfdi:"`) ni atributos con `"@_"`. Por defecto, se mantiene el formato completo. |
+
+### **jsonToXml**
+
+Convierte un JSON a XML
+
+```javascript
+Utils.jsonToXml(json);
+```
+
+| Argumento | Tipo | Descripción                                                       |
+| --------- | ---- | ----------------------------------------------------------------- |
+| json      | JSON | Contenido del cfdi con prefijos (`cfdi:`, ) y atributos con `@_`. |
+
+### **generateUuid**
+
+Te permite generar un UUID valido.
+
+```javascript
+Utils.generateUuid();
+```
+
+### **sanitizeText**
+
+Elimina cualquier tilde del texto y cualquier caracter no valido.
+
+```javascript
+Utils.sanitizeText(text);
+```
+
+### **dateCurrent**
+
+Retorna la fecha actual en string con formato: AAAA-MM-DDTHH:mm:ss
+
+```javascript
+Utils.dateCurrent();
+```
+
+### **generateIdCcp**
+
+Permite obtener un IdCCP valido para carta porte.
+
+```javascript
+Utils.generateIdCcp();
+```
+
+## **FacturaCfdi**
 
 Genera los comprobantes fiscales en formato XML y JSON.
 Permite crear CFDIs sellados o sin sellar de tipo ingreso, egreso y traslado.
@@ -526,11 +611,11 @@ Este método genera el XML sellado.
 fac.createXmlSellado();
 ```
 
-### **CatalogoSat**
+## **CatalogoSat**
 
 `CFDI-SAT-NODEJS` contiene los catalogos actualizados del SAT en formato JSON.
 
-Debido a que algunos catálogos contienen miles de registros, esta clase implementa un sistema de lectura por flujo que permite procesar los datos de forma secuencial, sin necesidad de cargar el archivo completo en memoria. Esto garantiza búsquedas optimizadas y un mejor rendimiento, incluso en archivos de gran tamaño.
+Debido a que algunos catálogos contienen miles de registros, esta clase implementa un sistema de lectura por flujo que permite procesar los datos de forma secuencial, sin necesidad de cargar el archivo completo en memoria. Esto garantiza búsquedas optimizadas y un mejor rendimiento.
 
 ```javascript
 const { CatalogoSat } = require("cfdi-sat-nodejs");
@@ -1125,6 +1210,502 @@ Abarca del 65000 al 99999
 }
 ```
 
-### **CartaPorteAutotransporte**
+## **CartaPorte**
 
-Con esta clase puede generar el complemento carta porte.
+Para generar complemento carta porte puede usar las distintas clases especificas para cada medio de transporte.
+
+[Para autotransportes](#CartaPorteAutotransporte)
+
+En esta sección se documenta los métodos usados por todos los medios de transporte.
+
+### **setAttributes**
+
+Este método asigna los atributos principales del nodo `cartaporte31:CartaPorte`, como el identificador idCCP, si el transporte es internacional y demas información.
+
+```javascript
+cartaporte.setAttributes({
+  idCcp: "CCCBCD94-870A-4332-A52A-A52AA52AA52A",
+  transpInternac: "Sí",
+  entradaSalidaMerc: "Entrada",
+  paisOrigenDestino: "USA",
+  registroISTMO: "Sí",
+  ubicacionPoloDestino: "01",
+  ubicacionPoloOrigen: "01",
+  totalDistRec: 10,
+  viaEntradaSalida: "01",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades          | Tipo                 | Descripción                                                                     |
+| -------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| idCcp                | string               | Identificador único del complemento Carta Porte.                                |
+| transpInternac       | "Sí" / "No"          | Indica si el transporte es internacional.                                       |
+| entradaSalidaMerc    | "Entrada" / "Salida" | (opcional) Define si la mercancía entra o sale del país.                        |
+| paisOrigenDestino    | string               | (opcional) Clave del país de origen o destino.                                  |
+| registroISTMO        | "Sí" / "No"          | (opcional) Señala si el traslado cruza por el Corredor Interoceánico del ISTMO. |
+| ubicacionPoloDestino | string               | Requerido si el registroISTMO es "Sí". Clave del polo de origen.                |
+| ubicacionPoloOrigen  | string               | Requerido si el registroISTMO es "Sí". Clave del polo de destino.               |
+| totalDistRec         | string / number      | (opcional) Distancia total recorrida en kilómetros.                             |
+| viaEntradaSalida     | string               | (opcional) Clave de la vía de entrada o salida.                                 |
+
+### **createNodeRegimenesAduaneros**
+
+El método genera el nodo `cartaporte31:RegimenesAduaneros`, a partir de una lista de claves de regímenes aduaneros. Cada clave representa un régimen aplicable al traslado de mercancías.
+
+```javascript
+cartaporte.createNodeRegimenesAduaneros(["IMD", "ITR"]);
+```
+
+USO POR INSTANCIA: 1
+
+| Argumento | Tipo             | Descripción                                  |
+| --------- | ---------------- | -------------------------------------------- |
+| data      | array de strings | Define las claves aplicables al complemento. |
+
+### **createNodeUbicacion**
+
+Permite establecer la información de ubicación, ya sea de origen o destino, incluyendo datos del punto logístico y su respectivo domicilio. Esta información es esencial para definir los movimientos de la mercancía dentro del complemento Carta Porte.
+
+```javascript
+cartaporte.createNodeUbicacion({
+  ubicacion: {
+    fechaHoraSalidaLlegada: "2023-08-01T00:00:01",
+    tipoUbicacion: "Origen",
+    rfcRemitenteDestinatario: "XEXX010101000",
+    idUbicacion: "29838",
+    distanciaRecorrida: 1,
+    nombreRemitenteDestinatario: "NombreRem",
+    numEstacion: 123,
+    navegacionTrafico: "Altura",
+    nombreEstacion: "Nombre de la estacion",
+    tipoEstacion: "01",
+    numRegIdTrib: 123456,
+    residenciaFiscal: "USA",
+  },
+  /* --------->  propiedad opcional <------------ */
+  domicilio: {
+    codigoPostal: 50485,
+    estado: "MEX",
+    pais: "MEX",
+    calle: "Calle ejemplo",
+    colonia: "Colonia",
+    localidad: "Localidad",
+    municipio: "Municipio",
+    numeroExterior: 0,
+    numeroInterior: 12,
+    referencia: "Referencia",
+  },
+});
+```
+
+USO POR INSTANCIA: minimo 2 (una de "Origen" y otra de "Destino") a más.
+
+| Argumento                   | Tipo                  | Descripción                                                                                           |
+| --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------- |
+| fechaHoraSalidaLlegada      | string                | Fecha y hora de salida o llegada de la mercancía.                                                     |
+| tipoUbicacion               | "Origen" / "Destino"  | Indica si es origen o destino del traslado.                                                           |
+| rfcRemitenteDestinatario    | string                | RFC del remitente o destinatario segun tipo de ubicación.                                             |
+| idUbicacion                 | string                | (opcional) Identificador único de la ubicación.                                                       |
+| distanciaRecorrida          | string / number       | Requerido si l tipo de ubicacion es "Destino". Distancia recorrida desde la ubicación anterior.       |
+| nombreRemitenteDestinatario | string                | (opcional) Nombre del remitente o destinatario.                                                       |
+| numEstacion                 | string                | (opcional) Clave de la estación de origen o destino para el traslado.                                 |
+| navegacionTrafico           | "Altura" / "Cabotaje" | (opcional) Tipo de puerto de origen o destino en el cual se documentan los bienes                     |
+| nombreEstacion              | string                | (opcional) Nombre de la estación de origen o destino por la que se pasa para efectuar el traslado.    |
+| tipoEstacion                | string                | (opcional) Clave del tipo de estación por el que pasan los bienes y/o mercancías durante su traslado. |
+| numRegIdTrib                | string                | (opcional) Número de registro fiscal del extranjero.                                                  |
+| residenciaFiscal            | string                | (opcional) País de residencia fiscal del remitente/destinatario.                                      |
+| codigoPostal                | string / number       | Código postal del domicilio.                                                                          |
+| estado                      | string                | Clave del estado según el catálogo del SAT.                                                           |
+| pais                        | string                | Clave del país (por ejemplo, "MEX" para México).                                                      |
+| calle                       | string                | (opcional) Nombre de la calle del domicilio.                                                          |
+| colonia                     | string                | (opcional) Colonia o barrio.                                                                          |
+| localidad                   | string                | (opcional) Localidad o ciudad.                                                                        |
+| municipio                   | string                | (opcional) Municipio o delegación.                                                                    |
+| numeroExterior              | string / number       | (opcional) Número exterior del domicilio.                                                             |
+| numeroInterior              | string / number       | (opcional) Número interior del domicilio.                                                             |
+| referencia                  | string                | (opcional) Información adicional para localizar el domicilio.                                         |
+
+### **createNodeMercancias**
+
+Define los atributos generales del nodo `cartaporte31:Mercancias`, incluyendo datos como la cantidad total de mercancías, pesos, unidad de medida, cargos por tasación y si el traslado contempla logística inversa, recolección o devolución.
+
+```javascript
+cartaporte.createNodeMercancias({
+  numTotalMercancias: 1,
+  pesoBrutoTotal: 15,
+  unidadPeso: "KG",
+  pesoNetoTotal: 18,
+  cargoPorTasacion: "16",
+  logisticaInversaRecoleccionDevolucion: "Sí",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedad                             | Tipo            | Descripción                                                           |
+| ------------------------------------- | --------------- | --------------------------------------------------------------------- |
+| numTotalMercancias                    | string / number | Número total de mercancías incluidas en el traslado.                  |
+| pesoBrutoTotal                        | string / number | Peso bruto total de las mercancías, incluyendo embalaje.              |
+| unidadPeso                            | string          | Unidad de medida utilizada para los pesos.                            |
+| pesoNetoTotal                         | string / number | (opcional) Peso neto total de las mercancías, sin incluir embalaje.   |
+| cargoPorTasacion                      | string          | (opcional) Monto correspondiente a cargos por tasación.               |
+| logisticaInversaRecoleccionDevolucion | "Sí" / "No"     | (opcional) Indica si hay logística inversa, recolección o devolución. |
+
+### **createNodeMercancia**
+
+Crea una nueva entrada de mercancía dentro del nodo `cartaporte31:Mercancias`. Este método permite detallar ampliamente las características del bien transportado, incluyendo información comercial, aduanera, sanitaria, de embalaje, identificación, cantidades transportadas y detalles físicos.
+
+```javascript
+cartaporte.createNodeMercancia({
+  mercancia: {
+    bienesTransp: "11121900",
+    cantidad: 1,
+    claveUnidad: "KGM",
+    descripcion: "mercancia",
+    pesoEnKg: 15.048,
+    valorMercancia: 109.08,
+    moneda: "MXN",
+    dimensiones: "30/40/30cm",
+    unidad: "KG",
+    fraccionArancelaria: "0101290300",
+    uuidComercioExt: "a3f01bc9-27e0-4123-8c6b-efb2138f61fd",
+    tipoMateria: "03",
+    descripcionMateria: "Materia terminada (producto terminado)",
+    materialPeligroso: "Sí",
+    cveMaterialPeligroso: "123",
+    embalaje: "4D",
+    descripEmbalaje: "Cajas de Madera contrachapada",
+    sectorCofepris: "01",
+    nombreIngredienteActivo: "Nombre",
+    nomQuimico: "Nombre quimico",
+    denominacionGenericaProd: "Denominacion generica",
+    denominacionDistintivaProd: "Denominacion distintiva",
+    fabricante: "Nombre fabricante",
+    fechaCaducidad: "2025-06-19",
+    loteMedicamento: "L-2304",
+    formaFarmaceutica: "01",
+    condicionesEspTransp: "02",
+    registroSanitarioFolioAutorizacion: "123456789",
+    permisoImportacion: "0987",
+    folioImpoVucem: "67378387",
+    numCas: "567",
+    razonSocialEmpImp: "Nombre o razon social",
+    numRegSanPlagCofepris: "33332",
+    datosFabricante: "Datos",
+    datosFormulador: "Datos",
+    datosMaquilador: "Maquilador",
+    usoAutorizado: "Au67890",
+  },
+  documentacionAduanera: [
+    {
+      tipoDocumento: "01",
+      numPedimento: "23  43  0472  8000448",
+      rfcImpo: "EKU9003173C9",
+      identDocAduanero: "1234567890",
+    },
+  ],
+  cantidadTransporta: [
+    {
+      cantidad: 1,
+      idOrigen: "80100",
+      idDestino: "56789",
+      cvesTransporte: "01",
+    },
+  ],
+  guiasIdentificacion: [
+    {
+      numeroGuiaIdentificacion: "1234567890",
+      descripGuiaIdentificacion: "328",
+      pesoGuiaIdentificacion: 555.001,
+    },
+  ],
+  detalleMercancia: {
+    pesoBruto: 5,
+    pesoNeto: 3,
+    pesoTara: 2,
+    unidadPesoMerc: "KGM",
+    numPiezas: 1,
+  },
+});
+```
+
+USO POR INSTANCIA: Las necesarias conforme a los conceptos agregados.
+
+#### Mercancia
+
+Objecto referente al concepto en el CFDI
+
+| Propiedades                        | Tipo            | Descripción                                                                                                     |
+| ---------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------- |
+| bienesTransp                       | string          | Clave del bien transportado según el catálogo del SAT.                                                          |
+| cantidad                           | string / number | Cantidad de unidades de la mercancía.                                                                           |
+| claveUnidad                        | string          | Clave de unidad de medida del bien.                                                                             |
+| descripcion                        | string          | Descripción general de la mercancía.                                                                            |
+| pesoEnKg                           | string / number | Peso de la mercancía en kilogramos.                                                                             |
+| valorMercancia                     | string / number | (opcional) Valor monetario total de la mercancía.                                                               |
+| moneda                             | string          | (opcional) Moneda en la que se expresa el valor.                                                                |
+| dimensiones                        | string          | (opcional) Dimensiones físicas del bien con formato 00/00/00(cm-plg)                                            |
+| unidad                             | string          | (opcional) Unidad específica de la mercancía.                                                                   |
+| fraccionArancelaria                | string          | (opcional) Fracción arancelaria para comercio exterior.                                                         |
+| uuidComercioExt                    | string(uuid)    | Requerido si existe fraccion arancelaria. UUID del pedimento de comercio exterior.                              |
+| tipoMateria                        | string          | (opcional) Clave del tipo de materia                                                                            |
+| descripcionMateria                 | string          | Requerido si existe tipo de materia. Descripción del tipo de materia.                                           |
+| materialPeligroso                  | "Sí" / "No"     | (opcional) Indica si la mercancía es material peligroso.                                                        |
+| cveMaterialPeligroso               | string          | Requerido si la clave del bienTransp es material peligroso. Clave que identifica el tipo de material peligroso. |
+| embalaje                           | string          | Requerido si la clave del bienTransp es material peligroso. Clave del tipo de embalaje utilizado.               |
+| descripEmbalaje                    | string          | Requerido si la clave del bienTransp es material peligroso. Descripción del tipo de embalaje.                   |
+| sectorCofepris                     | string          | (opcional) Sector regulado por COFEPRIS.                                                                        |
+| nombreIngredienteActivo            | string          | Requerido si existe sectorCofepris. Nombre del ingrediente activo.                                              |
+| nomQuimico                         | string          | Requerido si existe sectorCofepris. Nombre químico del producto.                                                |
+| denominacionGenericaProd           | string          | Requerido si existe sectorCofepris. Denominación genérica del producto.                                         |
+| denominacionDistintivaProd         | string          | Requerido si existe sectorCofepris. Denominación distintiva o comercial del producto.                           |
+| fabricante                         | string          | Requerido si existe sectorCofepris. Nombre del fabricante del producto.                                         |
+| fechaCaducidad                     | string          | Requerido si existe sectorCofepris. Fecha de caducidad del producto.                                            |
+| loteMedicamento                    | string          | Requerido si el valor sectorCofepris es "01". Lote del medicamento.                                             |
+| formaFarmaceutica                  | string          | Requerido si el valor sectorCofepris es "01". Clave de la forma farmacéutica.                                   |
+| condicionesEspTransp               | string          | Requerido si el valor sectorCofepris es "01"/"02"/"03". Clave de condiciones especiales de transporte.          |
+| registroSanitarioFolioAutorizacion | string          | Requerido si el valor sectorCofepris es "01"/"03". Folio o número de autorización sanitaria.                    |
+| permisoImportacion                 | string          | Requerido si el valor sectorCofepris es "01"/"02"/"03". Clave del permiso de importación.                       |
+| folioImpoVucem                     | string          | Requerido si el valor sectorCofepris es distinto a "03".Folio del permiso en VUCEM.                             |
+| numCas                             | string          | Requerido si el valor sectorCofepris es "04". Número CAS del componente químico.                                |
+| razonSocialEmpImp                  | string          | Requerido si el valor sectorCofepris es "04". Nombre o razón social del importador.                             |
+| numRegSanPlagCofepris              | string          | Requerido si el valor sectorCofepris es "04"/"05". Número de registro sanitario o plaguicida.                   |
+| datosFabricante                    | string          | Requerido si el valor sectorCofepris es "05". Información adicional sobre el fabricante.                        |
+| datosFormulador                    | string          | Requerido si el valor sectorCofepris es "05". Información del formulador.                                       |
+| datosMaquilador                    | string          | Requerido si el valor sectorCofepris es "05". Información del maquilador.                                       |
+| usoAutorizado                      | string          | Requerido si el valor sectorCofepris es "05". Clave o descripción del uso autorizado del producto.              |
+
+#### documentacionAduanera
+
+Array opcional con soporte para varios objetos
+
+| Propiedades      | Tipo   | Descripción                                     |
+| ---------------- | ------ | ----------------------------------------------- |
+| tipoDocumento    | string | Clave que indica el tipo de documento aduanero. |
+| numPedimento     | string | (opcional) Número de pedimento aduanal.         |
+| rfcImpo          | string | (opcional) RFC del importador.                  |
+| identDocAduanero | string | (opcional) Identificador del documento aduanero |
+
+#### cantidadTransporta
+
+Array opcional con soporte para varios objetos
+
+| Propiedades    | Tipo            | Descripción                                                |
+| -------------- | --------------- | ---------------------------------------------------------- |
+| cantidad       | string / number | Cantidad de mercancía transportada entre origen y destino. |
+| idOrigen       | string          | Identificador de la ubicación de origen.                   |
+| idDestino      | string          | Identificador de la ubicación de destino.                  |
+| cvesTransporte | string          | Clave del tipo de transporte utilizado.                    |
+
+#### guiasIdentificacion
+
+Array opcional con soporte para varios objetos
+
+| Propiedades               | Tipo            | Descripción                                                  |
+| ------------------------- | --------------- | ------------------------------------------------------------ |
+| numeroGuiaIdentificacion  | string          | Número o folio de la guía de identificación de la mercancía. |
+| descripGuiaIdentificacion | string          | Descripción de la guía o del contenido que identifica.       |
+| pesoGuiaIdentificacion    | string / number | Peso asociado a la guía de identificación, en kilogramos.    |
+
+#### detalleMercancia
+
+Objecto opcional.
+
+| Propiedades    | Tipo            | Descripción                                                |
+| -------------- | --------------- | ---------------------------------------------------------- |
+| pesoBruto      | string / number | Peso bruto de la mercancía, incluyendo empaque.            |
+| pesoNeto       | string / number | Peso neto de la mercancía, sin empaque.                    |
+| pesoTara       | string / number | Diferncia entre el peso bruto menos el peso neto.          |
+| unidadPesoMerc | string          | Unidad de medida del peso.                                 |
+| numPiezas      | string / number | (opcional) Número total de piezas físicas de la mercancía. |
+
+### **createNodeTipoFigura**
+
+Construye el nodo `cartaporte31:TiposFigura`, donde se especifica la información de la persona o entidad que participa en el traslado de mercancías, como el operador, intermediario, agente de transporte, entre otros. Este nodo es esencial para definir la responsabilidad y participación de personas en el proceso logístico.
+
+```javascript
+cartaporte.createNodeTipoFigura({
+  tipoFigura: {
+    nombreFigura: "NombreFigura",
+    tipoFigura: "01",
+    rfcFigura: "EKU9003173C9",
+    numLicencia: "324567890",
+    numRegIdTribFigura: "65432323",
+    residenciaFiscalFigura: "USA",
+  },
+  domicilio: {
+    codigoPostal: 50485,
+    estado: "MEX",
+    pais: "MEX",
+    calle: "Calle ejemplo",
+    colonia: "Colonia",
+    localidad: "Localidad",
+    municipio: "Municipio",
+    numeroExterior: 0,
+    numeroInterior: 12,
+    referencia: "Referencia",
+  },
+  partesTransporte: [{ parteTransporte: "1234567890" }],
+});
+```
+
+USO POR INSTANCIA: 1 a más
+
+#### tipofigura
+
+Objeto obligatorio para establecer datos del operador, agente u otro.
+
+| Propiedades            | Tipo   | Descripción                                                                                      |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------ |
+| nombreFigura           | string | Nombre completo de la persona o entidad que participa en el traslado.                            |
+| tipoFigura             | string | Clave que indica el tipo de figura.                                                              |
+| rfcFigura              | string | (opcional) RFC de la figura que realiza el traslado o participa en él.                           |
+| numLicencia            | string | (opcional) Número de licencia del operador.                                                      |
+| numRegIdTribFigura     | string | (opcional) Número de registro de identificación tributaria del operador u otro si es extranjero. |
+| residenciaFiscalFigura | string | Requerido si el operador u otro es extranjero. Clave del país de residencia fiscal de la figura. |
+
+#### domicilio
+
+Objeto opcional para establecer el domicilio del tipo figura.
+
+| Propiedades    | Tipo            | Descripción                                                   |
+| -------------- | --------------- | ------------------------------------------------------------- |
+| codigoPostal   | string / number | Código postal del domicilio.                                  |
+| estado         | string          | Clave del estado según el catálogo del SAT.                   |
+| pais           | string          | Clave del país (por ejemplo, "MEX" para México).              |
+| calle          | string          | (opcional) Nombre de la calle del domicilio.                  |
+| colonia        | string          | (opcional) Colonia o barrio.                                  |
+| localidad      | string          | (opcional) Localidad o ciudad.                                |
+| municipio      | string          | (opcional) Municipio o delegación.                            |
+| numeroExterior | string / number | (opcional) Número exterior del domicilio.                     |
+| numeroInterior | string / number | (opcional) Número interior del domicilio.                     |
+| referencia     | string          | (opcional) Información adicional para localizar el domicilio. |
+
+#### partesTransporte
+
+Array opcional de objetos.
+
+| Propiedades     | Tipo   | Descripción                                                                              |
+| --------------- | ------ | ---------------------------------------------------------------------------------------- |
+| parteTransporte | string | Clave que representa una parte específica del transporte en la que interviene la figura. |
+
+### **createXmlSellado**
+
+Para generar el XML con complemento carta porte sellado use este método.
+
+```javascript
+await cartaporte.createXmlSellado();
+```
+
+### **createJsonSellado**
+
+Si requiere el CFDI con complemento carta porte en un objeto JSON use este método.
+
+```javascript
+cartaporte.createJsonSellado(simplified);
+```
+
+| Argumento  | Tipo    | Descripción                                                                                                                                                          |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| simplified | boolean | (opcional) Si se establece en `true`, genera un JSON más limpio sin prefijos (como `"cfdi:"`) ni atributos con `"@_"`. Por defecto, se mantiene el formato completo. |
+
+## **CartaPorteAutotransporte**
+
+Con esta clase puede generar el complemento carta porte para autotransporte.
+
+```javascript
+const cartaporte = new CartaPorteAutotransporte(xml, configCfdi);
+```
+
+| Argumento  | Tipo          | Descripción                                                                         |
+| ---------- | ------------- | ----------------------------------------------------------------------------------- |
+| xml        | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
+| configCfdi | ConfigCfdi    | Instancia de ConfigCfdi previamente hecha.                                          |
+
+### **createNodeAutotransporte**
+
+Te permite establecer información relevante para el nodo `cartaporte31:Autotransporte`
+
+```javascript
+cartaporte.createNodeAutotransporte({
+  permSct: "TPAF01",
+  numPermisoSct: "NumPermisoSCT1",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades   | Tipo   | Descripción                                                                                   |
+| ------------- | ------ | --------------------------------------------------------------------------------------------- |
+| permSct       | string | Clave del tipo de permiso proporcionado por la SICT correspondiente al autotransporte a usar. |
+| numPermisoSct | string | Número del permiso otorgado por la SICT del autotransporte.                                   |
+
+### **createNodeIdentificacionVehicular**
+
+Define los atributos del nodo `cartaporte31:IdentificacionVehicular`, especificando las características principales del vehículo utilizado para el transporte, como el año modelo, configuración vehicular, peso bruto y placa. Este nodo es esencial para identificar formalmente el medio de transporte terrestre.
+
+```javascript
+cartaporte.createNodeIdentificacionVehicular({
+  placaVm: "plac892",
+  anioModeloVm: 2025,
+  configVehicular: "VL",
+  pesoBrutoVehicular: "10",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades        | Tipo            | Descripción                                                            |
+| ------------------ | --------------- | ---------------------------------------------------------------------- |
+| placaVm            | string          | Placa del vehículo motriz.                                             |
+| anioModeloVm       | string / number | Año modelo del vehículo.                                               |
+| configVehicular    | string          | Clave que indica la configuración vehicular según el catálogo del SAT. |
+| pesoBrutoVehicular | string / numbre | Peso bruto del vehículo en toneladas o kilogramos.                     |
+
+### **createNodeSeguros**
+
+Genera el nodo `cartaporte31:Seguros`, donde se especifica la información relacionada con el seguro de responsabilidad civil del vehículo que transporta la mercancía, incluyendo la aseguradora y el número de póliza correspondiente.
+
+```javascript
+cartaporte.createNodeSeguros({
+  aseguraRespCivil: "AseguraRespCivil",
+  polizaRespCivil: "123456789",
+  aseguraCarga: "Aseguradora",
+  polizaCarga: "123456789",
+  aseguraMedAmbiente: "Aseguradora en Medio ambiente",
+  polizaMedAmbiente: "65432",
+  primaSeguro: 43893.48,
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades        | Tipo            | Descripción                                                                                                  |
+| ------------------ | --------------- | ------------------------------------------------------------------------------------------------------------ |
+| aseguraRespCivil   | string          | Nombre de la aseguradora que cubre la responsabilidad civil del vehículo utilizado en el traslado.           |
+| polizaRespCivil    | string          | Número de póliza del seguro de responsabilidad civil.                                                        |
+| aseguraCarga       | string          | (opcional) Nombre de la aseguradora que cubre los riesgos relacionados con la carga transportada.            |
+| polizaCarga        | string          | Requerido si existe una aseguradora para la carga. Número de póliza del seguro de carga.                     |
+| aseguraMedAmbiente | string          | (opcional) Nombre de la aseguradora que cubre daños al medio ambiente derivados del traslado.                |
+| polizaMedAmbiente  | string          | Requerido si existe una aseguradora que cubre daños al med. ambiente. Número de póliza del seguro ambiental. |
+| primaSeguro        | string / number | (opcional) Monto de la prima total pagada por los seguros relacionados con el transporte.                    |
+
+### **createNodeRemolques**
+
+Genera el nodo `cartaporte31:Remolque`, donde se especifica la información del remolque o semirremolque utilizado en el traslado, incluyendo su placa y subtipo conforme al catálogo del SAT. Este nodo se utiliza cuando el vehículo cuenta con uno o dos remolques.
+
+```javascript
+cartaporte.createNodeRemolques({
+  placa: "placa12",
+  subTipoRem: "CTR007",
+});
+```
+
+USO POR INSTANCIA: 0 a 2
+
+| Propiedades | Tipo   | Descripción                                               |
+| ----------- | ------ | --------------------------------------------------------- |
+| placa       | string | Placa del remolque o semirremolque.                       |
+| subTipoRem  | string | Clave del subtipo de remolque, según el catálogo del SAT. |
