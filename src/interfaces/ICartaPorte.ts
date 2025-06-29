@@ -95,6 +95,7 @@ export interface IObjectNodeMercancias {
   "@_CargoPorTasacion"?: string;
   "cartaporte31:Mercancia": IObjectNodeMerc[];
   "cartaporte31:Autotransporte"?: IObjectNodeAutotransporte;
+  "cartaporte31:TransporteMaritimo"?: IObjectNodeMaritimo;
 }
 export interface INodeMercancia {
   mercancia: INodeMerc;
@@ -235,17 +236,96 @@ export interface IObjectNodeDetMercancia {
   "@_PesoTara": string | number;
   "@_NumPiezas"?: string | number;
 }
-export interface INodeAutotransporte {
+export interface INodeTransporte {
   permSct: string;
   numPermisoSct: string;
 }
-export interface IObjectNodeAutotransporte {
+export interface INodeMaritimo extends INodeTransporte {
+  tipoEmbarcacion: string;
+  matricula: string;
+  numeroOmi: string;
+  nacionalidadEmbarc: string;
+  unidadesDeArqBruto: string;
+  tipoCarga: string;
+  nombreAgenteNaviero: string;
+  numAutorizacionNaviero: string;
+  numViaje?: string;
+  numConocEmbarc?: string;
+  permisoTempNavegacion?: string;
+  anioEmbarcacion?: string | number;
+  nombreEmbarc?: string;
+  eslora?: string | number;
+  manga?: string | number;
+  calado?: string | number;
+  puntal?: string | number;
+  lineaNaviera?: string;
+  nombreAseg?: string;
+  numPolizaSeguro?: string;
+}
+interface IObjectNodeTransporte {
   "@_PermSCT": string;
   "@_NumPermisoSCT": string;
+}
+export interface IObjectNodeMaritimo extends IObjectNodeTransporte {
+  "@_TipoEmbarcacion": string;
+  "@_Matricula": string;
+  "@_NumeroOMI": string;
+  "@_NacionalidadEmbarc": string;
+  "@_UnidadesDeArqBruto": string;
+  "@_TipoCarga": string;
+  "@_NombreAgenteNaviero": string;
+  "@_NumAutorizacionNaviero": string;
+  "@_NumViaje"?: string;
+  "@_NumConocEmbarc"?: string;
+  "@_PermisoTempNavegacion"?: string;
+  "@_AnioEmbarcacion"?: string | number;
+  "@_NombreEmbarc"?: string;
+  "@_Eslora"?: string | number;
+  "@_Manga"?: string | number;
+  "@_Calado"?: string | number;
+  "@_Puntal"?: string | number;
+  "@_LineaNaviera"?: string;
+  "@_NombreAseg"?: string;
+  "@_NumPolizaSeguro"?: string;
+  "cartaporte31:Contenedor"?: IObjectNodeContenedor[];
+}
+export interface INodeContenedorM {
+  contenedor: INodeContenedor;
+  remolques?: INodeRemolqueM[];
+}
+export interface INodeContenedor {
+  tipoContenedor: string;
+  matriculaContenedor?: string;
+  numPrecinto?: string;
+  idCcpRelacionado?: string;
+  placaVmCcp?: string;
+  fechaCertificacionCcp?: string;
+}
+export interface IObjectNodeContenedor {
+  "@_TipoContenedor": string;
+  "@_MatriculaContenedor"?: string;
+  "@_NumPrecinto"?: string;
+  "@_IdCCPRelacionado"?: string;
+  "@_PlacaVMCCP"?: string;
+  "@_FechaCertificacionCCP"?: string;
+  "cartaporte31:RemolquesCCP"?: {
+    "cartaporte31:RemolqueCCP": IObjectNodeRemolqueM[];
+  };
+}
+export interface INodeRemolqueM {
+  subTipoRemCcp: string;
+  placaCcp: string;
+}
+export interface IObjectNodeRemolqueM {
+  "@_SubTipoRemCCP": string;
+  "@_PlacaCCP": string;
+}
+export interface IObjectNodeAutotransporte extends IObjectNodeTransporte {
   "cartaporte31:IdentificacionVehicular": IObjectNodeIdenVehicular;
   "cartaporte31:Seguros": IObjectNodeSeguros;
   "cartaporte31:Remolques"?: { "cartaporte31:Remolque": IObjectNodeRemolques[] };
 }
+
 export interface INodeIdenVehicular {
   configVehicular: string;
   pesoBrutoVehicular: string | number;
@@ -284,7 +364,6 @@ export interface IObjectNodeRemolques {
   "@_SubTipoRem": string;
   "@_Placa": string;
 }
-
 export interface INodeTipoFigura {
   tipoFigura: INodeTF;
   partesTransporte?: INodeParteTrans[];

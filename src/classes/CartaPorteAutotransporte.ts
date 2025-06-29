@@ -1,13 +1,13 @@
-import { INodeAutotransporte, INodeIdenVehicular, INodeRemolques, INodeSeguros } from "../interfaces/ICartaPorte";
+import { INodeTransporte, INodeIdenVehicular, INodeRemolques, INodeSeguros } from "../interfaces/ICartaPorte";
 import CartaPorte from "./CartaPorte";
 import ConfigCfdi from "./ConfigCfdi";
 
 class CartaPorteAutotransporte extends CartaPorte {
   constructor(cfdi: string | object, config_cfdi: ConfigCfdi) {
-    super(cfdi, config_cfdi);
+    super(cfdi, config_cfdi, "A");
   }
-  public createNodeAutotransporte(data: INodeAutotransporte) {
-    this.setNodeAutotransporteData(data);
+  public createNodeAutotransporte(data: INodeTransporte) {
+    this.setNodeTransporteData(data);
   }
   public createNodeIdentificacionVehicular(data: INodeIdenVehicular) {
     this.setNodeAutotransporteIdenVehicular(data);

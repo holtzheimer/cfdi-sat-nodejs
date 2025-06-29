@@ -608,7 +608,7 @@ fac.createXml();
 Este método genera el XML sellado.
 
 ```javascript
-fac.createXmlSellado();
+await fac.createXmlSellado();
 ```
 
 ## **CatalogoSat**

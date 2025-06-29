@@ -1,6 +1,6 @@
 import {
   ICartaPorte,
-  INodeAutotransporte,
+  INodeTransporte,
   INodeTipoFigura,
   INodeIdenVehicular,
   INodeMercancia,
@@ -20,6 +20,10 @@ import {
   IObjectNodeTF,
   IObjectTFDomicilio,
   IObjectNodeUbi,
+  IObjectNodeMaritimo,
+  INodeMaritimo,
+  INodeContenedorM,
+  IObjectNodeContenedor,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";
 import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } from "../utils/mercancia_keys";
@@ -28,11 +32,12 @@ import { tipos_figura_domicilio, tipos_figura_keys } from "../utils/tipos_figura
 import { ubicacion_keys } from "../utils/ubicacion_keys";
 import generateCadenaOriginal from "../utils/generateCadenaOriginal";
 import ConfigCfdi from "./ConfigCfdi";
-import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
+import { contenedor_keys, maritimo_keys } from "../utils/maritimotransporte_key";
 
 abstract class CartaPorte {
   private readonly cfdi: string | object;
   private readonly config_cfdi: ConfigCfdi;
+  private readonly type_cp: "A" | "M" | "F" | "AV";
   private attributes: ICartaPorte = {
     idCcp: "",
     transpInternac: "No",
@@ -45,7 +50,7 @@ abstract class CartaPorte {
     unidadPeso: "",
   };
   private readonly node_mercancias: INodeMercancia[] = [];
-  private node_autotransporte: INodeAutotransporte = {
+  private node_transporte: INodeTransporte = {
     numPermisoSct: "",
     permSct: "",
   };
@@ -60,11 +65,25 @@ abstract class CartaPorte {
     polizaRespCivil: "",
   };
   private readonly node_autotransporte_remolques: INodeRemolques[] = [];
+  private node_transporte_maritimo: INodeMaritimo = {
+    matricula: "",
+    nacionalidadEmbarc: "",
+    nombreAgenteNaviero: "",
+    numAutorizacionNaviero: "",
+    numeroOmi: "",
+    numPermisoSct: "",
+    permSct: "",
+    tipoCarga: "",
+    tipoEmbarcacion: "",
+    unidadesDeArqBruto: "",
+  };
+  private node_contenedores_maritimos: INodeContenedorM[] = [];
   private readonly node_tipo_figura: INodeTipoFigura[] = [];
 
-  constructor(cfdi: string | object, config_cfdi: ConfigCfdi) {
+  constructor(cfdi: string | object, config_cfdi: ConfigCfdi, type: "A" | "M" | "F" | "AV") {
     this.cfdi = cfdi;
     this.config_cfdi = config_cfdi;
+    this.type_cp = type;
   }
   public setAttributes(data: ICartaPorte): void {
     this.attributes = data;
@@ -270,8 +289,11 @@ abstract class CartaPorte {
       }
       return node as IObjectNodeMerc;
     });
-    if (this.node_autotransporte.permSct !== "" && this.node_autotransporte.numPermisoSct !== "") {
+    if (this.type_cp === "A") {
       att["cartaporte31:Autotransporte"] = this.generateNodeAutotransporte();
+    }
+    if (this.type_cp === "M") {
+      att["cartaporte31:TransporteMaritimo"] = this.generateNodeMaritimo();
     }
     return att as IObjectNodeMercancias;
   }
@@ -283,8 +305,8 @@ abstract class CartaPorte {
       }
     }
     const node: IObjectNodeAutotransporte = {
-      "@_PermSCT": this.node_autotransporte.permSct,
-      "@_NumPermisoSCT": this.node_autotransporte.numPermisoSct,
+      "@_PermSCT": this.node_transporte.permSct,
+      "@_NumPermisoSCT": this.node_transporte.numPermisoSct,
       "cartaporte31:IdentificacionVehicular": {
         "@_AnioModeloVM": this.node_identificacion_vehicular.anioModeloVm,
         "@_ConfigVehicular": this.node_identificacion_vehicular.configVehicular,
@@ -303,6 +325,38 @@ abstract class CartaPorte {
     }
     return node;
   }
+  private generateNodeMaritimo(): IObjectNodeMaritimo {
+    const node = {} as Partial<IObjectNodeMaritimo>;
+    for (const mk of maritimo_keys) {
+      if (this.node_transporte_maritimo[mk.entrada]) {
+        node[mk.salida] = this.node_transporte_maritimo[mk.entrada] as any;
+      }
+    }
+    if (this.node_contenedores_maritimos.length > 0) {
+      node["cartaporte31:Contenedor"] = this.node_contenedores_maritimos.map((cm) => this.generateNodeContenedor(cm));
+    }
+
+    return node as IObjectNodeMaritimo;
+  }
+  private generateNodeContenedor(cm: INodeContenedorM) {
+    const node = {} as Partial<IObjectNodeContenedor>;
+    for (const ck of contenedor_keys) {
+      if (cm.contenedor[ck.entrada]) {
+        node[ck.salida] = cm.contenedor[ck.entrada] as any;
+      }
+    }
+    if ("remolques" in cm && cm.remolques!.length > 0) {
+      node["cartaporte31:RemolquesCCP"] = {
+        "cartaporte31:RemolqueCCP": cm.remolques!.map((r) => {
+          return {
+            "@_PlacaCCP": r.placaCcp,
+            "@_SubTipoRemCCP": r.subTipoRemCcp,
+          };
+        }),
+      };
+    }
+    return node as IObjectNodeContenedor;
+  }
   private generateNodeFiguraTranporte() {
     const node: { "cartaporte31:TiposFigura": IObjectNodeTF[] } = {
       "cartaporte31:TiposFigura": this.node_tipo_figura.map((tf) => {
@@ -311,6 +365,11 @@ abstract class CartaPorte {
           if (tf.tipoFigura[tfk.entrada]) {
             node_att[tfk.salida] = tf.tipoFigura[tfk.entrada] as any;
           }
+        }
+        if ("partesTransporte" in tf) {
+          node_att["cartaporte31:PartesTransporte"] = tf.partesTransporte!.map((pt) => ({
+            "@_ParteTransporte": pt.parteTransporte,
+          }));
         }
         if ("domicilio" in tf) {
           const node_att_dom = {} as Partial<IObjectTFDomicilio>;
@@ -321,18 +380,16 @@ abstract class CartaPorte {
           }
           node_att["cartaporte31:Domicilio"] = node_att_dom as IObjectTFDomicilio;
         }
-        if ("partesTransporte" in tf) {
-          node_att["cartaporte31:PartesTransporte"] = tf.partesTransporte!.map((pt) => ({
-            "@_ParteTransporte": pt.parteTransporte,
-          }));
-        }
         return node_att as IObjectNodeTF;
       }),
     };
     return node;
   }
-  protected setNodeAutotransporteData(data: INodeAutotransporte) {
-    this.node_autotransporte = data;
+  protected setNodeTransporteData(data: INodeTransporte) {
+    this.node_transporte = data;
+  }
+  protected setNodeTransporteMaritimo(data: INodeMaritimo) {
+    this.node_transporte_maritimo = data;
   }
   protected setNodeAutotransporteIdenVehicular(data: INodeIdenVehicular) {
     this.node_identificacion_vehicular = data;
@@ -342,6 +399,9 @@ abstract class CartaPorte {
   }
   protected setNodeAutotransporteRemolques(data: INodeRemolques) {
     this.node_autotransporte_remolques.push(data);
+  }
+  protected setNodeContenedorMaritimo(data: INodeContenedorM) {
+    this.node_contenedores_maritimos.push(data);
   }
 }
 export default CartaPorte;
