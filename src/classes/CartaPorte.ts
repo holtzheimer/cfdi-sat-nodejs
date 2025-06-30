@@ -24,6 +24,8 @@ import {
   INodeMaritimo,
   INodeContenedorM,
   IObjectNodeContenedor,
+  INodeAereo,
+  IObjectNodeAereo,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";
 import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } from "../utils/mercancia_keys";
@@ -33,6 +35,7 @@ import { ubicacion_keys } from "../utils/ubicacion_keys";
 import generateCadenaOriginal from "../utils/generateCadenaOriginal";
 import ConfigCfdi from "./ConfigCfdi";
 import { contenedor_keys, maritimo_keys } from "../utils/maritimotransporte_key";
+import { aereo_keys } from "../utils/aereo_keys";
 
 abstract class CartaPorte {
   private readonly cfdi: string | object;
@@ -78,6 +81,12 @@ abstract class CartaPorte {
     unidadesDeArqBruto: "",
   };
   private node_contenedores_maritimos: INodeContenedorM[] = [];
+  private node_transporte_aereo: INodeAereo = {
+    numPermisoSct: "",
+    permSct: "",
+    codigoTransportista: "",
+    numeroGuia: "",
+  };
   private readonly node_tipo_figura: INodeTipoFigura[] = [];
 
   constructor(cfdi: string | object, config_cfdi: ConfigCfdi, type: "A" | "M" | "F" | "AV") {
@@ -295,6 +304,9 @@ abstract class CartaPorte {
     if (this.type_cp === "M") {
       att["cartaporte31:TransporteMaritimo"] = this.generateNodeMaritimo();
     }
+    if (this.type_cp === "AV") {
+      att["cartaporte31:TransporteAereo"] = this.generateNodeAereo();
+    }
     return att as IObjectNodeMercancias;
   }
   private generateNodeAutotransporte(): IObjectNodeAutotransporte {
@@ -357,6 +369,15 @@ abstract class CartaPorte {
     }
     return node as IObjectNodeContenedor;
   }
+  private generateNodeAereo(): IObjectNodeAereo {
+    const node = {} as Partial<IObjectNodeAereo>;
+    for (const ak of aereo_keys) {
+      if (this.node_transporte_aereo[ak.entrada]) {
+        node[ak.salida] = this.node_transporte_aereo[ak.entrada] as any;
+      }
+    }
+    return node as IObjectNodeAereo;
+  }
   private generateNodeFiguraTranporte() {
     const node: { "cartaporte31:TiposFigura": IObjectNodeTF[] } = {
       "cartaporte31:TiposFigura": this.node_tipo_figura.map((tf) => {
@@ -402,6 +423,9 @@ abstract class CartaPorte {
   }
   protected setNodeContenedorMaritimo(data: INodeContenedorM) {
     this.node_contenedores_maritimos.push(data);
+  }
+  protected setNodeTransporteAereo(data: INodeAereo) {
+    this.node_transporte_aereo = data;
   }
 }
 export default CartaPorte;

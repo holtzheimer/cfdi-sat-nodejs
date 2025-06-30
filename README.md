@@ -46,6 +46,11 @@ Si planeas actualizar, asegúrate de leer la documentación actual para adaptar 
   - [createNodeAutotransporte](#createNodeAutotransporte)
   - [createNodeIdentificacionVehicular](#createNodeIdentificacionVehicular)
   - [createNodeRemolques](#createNodeRemolques)
+- [CartaPorteMaritimo](#CartaPorteMaritimo)
+  - [createNodeMaritimo](#createNodeMaritimo)
+  - [createNodeContenedor](#createNodeContenedor)
+- [CartaPorteAereo](#CartaPorteAereo)
+  - [createNodeAereo](#createNodeAereo)
 
 ## **Instalación**
 
@@ -1215,6 +1220,7 @@ Abarca del 65000 al 99999
 Para generar complemento carta porte puede usar las distintas clases especificas para cada medio de transporte.
 
 [Para autotransportes](#CartaPorteAutotransporte)
+[Para maritimos](#CartaPorteMaritimo)
 
 En esta sección se documenta los métodos usados por todos los medios de transporte.
 
@@ -1616,12 +1622,12 @@ await cartaporte.createJsonSellado(simplified);
 Con esta clase puede generar el complemento carta porte para autotransporte.
 
 ```javascript
-const cartaporte = new CartaPorteAutotransporte(xml, configCfdi);
+const cartaporte = new CartaPorteAutotransporte(cfdi, configCfdi);
 ```
 
 | Argumento  | Tipo          | Descripción                                                                         |
 | ---------- | ------------- | ----------------------------------------------------------------------------------- |
-| xml        | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
+| cfdi       | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
 | configCfdi | ConfigCfdi    | Instancia de ConfigCfdi previamente hecha.                                          |
 
 ### **createNodeAutotransporte**
@@ -1709,3 +1715,168 @@ USO POR INSTANCIA: 0 a 2
 | ----------- | ------ | --------------------------------------------------------- |
 | placa       | string | Placa del remolque o semirremolque.                       |
 | subTipoRem  | string | Clave del subtipo de remolque, según el catálogo del SAT. |
+
+## **CartaPorteMaritimo**
+
+Clase para la creación de carta porte con medio de tranporte maritimo.
+
+```javascript
+const cartaporte = new CartaPorteMaritimo(cfdi, configCfdi);
+```
+
+| Argumento  | Tipo          | Descripción                                                                         |
+| ---------- | ------------- | ----------------------------------------------------------------------------------- |
+| cfdi       | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
+| configCfdi | ConfigCfdi    | Instancia de ConfigCfdi previamente hecha.                                          |
+
+### **createNodeMaritimo**
+
+Te permite establecer los atributos para el nodo `cartaporte31:TransporteMaritimo`
+
+```javascript
+cartaporte.createNodeMaritimo({
+  permSct: "TPAF01",
+  numPermisoSct: "NumPermisoSCT1",
+  tipoEmbarcacion: "B01",
+  matricula: "Matricula1",
+  nacionalidadEmbarc: "AFG",
+  permisoTempNavegacion: "Prmiso",
+  nombreAgenteNaviero: "NombreAgenteNaviero1",
+  numAutorizacionNaviero: "ANC005/2022",
+  numeroOmi: "IMO1234567",
+  tipoCarga: "CGS",
+  unidadesDeArqBruto: "0.001",
+  anioEmbarcacion: "2003",
+  numConocEmbarc: "Numro 234",
+  numViaje: "09876",
+  lineaNaviera: "LineaNaviera1",
+  nombreAseg: "Nombre aseg",
+  numPolizaSeguro: "NumPolizaSeguro1",
+  nombreEmbarc: "NombreEmbarc1",
+  calado: "0.01",
+  eslora: "0.01",
+  manga: "0.01",
+  puntal: "0.01",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades            | Tipo            | Descripción                                                                                    |
+| ---------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
+| permSct                | string          | Clave del tipo de permiso proporcionado por la SICT correspondiente al transporte marítimo.    |
+| numPermisoSct          | string          | Número del permiso otorgado por la SICT del transporte marítimo.                               |
+| tipoEmbarcacion        | string          | Tipo de embarcación utilizada.                                                                 |
+| matricula              | string          | Matrícula de la embarcación.                                                                   |
+| nacionalidadEmbarc     | string          | Nacionalidad de la embarcación.                                                                |
+| permisoTempNavegacion  | string          | Requerido si la nacionalidad del embarque es distinto a "MEX". Permiso temporal de navegación. |
+| nombreAgenteNaviero    | string          | Nombre del agente naviero responsable.                                                         |
+| numAutorizacionNaviero | string          | Número de autorización del agente naviero.                                                     |
+| numeroOmi              | string          | Número OMI de la embarcación.                                                                  |
+| tipoCarga              | string          | Tipo de carga transportada.                                                                    |
+| unidadesDeArqBruto     | string          | Unidades de arqueo bruto de la embarcación.                                                    |
+| anioEmbarcacion        | string / number | Año de fabricación de la embarcación.                                                          |
+| numConocEmbarc         | string          | Número de conocimiento de embarque.                                                            |
+| numViaje               | string          | Número del viaje marítimo.                                                                     |
+| lineaNaviera           | string          | Nombre de la línea naviera.                                                                    |
+| nombreAseg             | string          | Nombre de la aseguradora del transporte marítimo.                                              |
+| numPolizaSeguro        | string          | Número de póliza de seguro del transporte marítimo.                                            |
+| nombreEmbarc           | string          | Nombre de la embarcación.                                                                      |
+| calado                 | string / number | Calado de la embarcación.                                                                      |
+| eslora                 | string / number | Eslora de la embarcación.                                                                      |
+| manga                  | string / number | Manga de la embarcación.                                                                       |
+| puntal                 | string / number | Puntal de la embarcación.                                                                      |
+
+### **createNodeContenedor**
+
+Genera el nodo `cartaporte31:Contenedor` con los datos del contenedor marítimo y los remolques que lo transportan. Incluye tipo de contenedor, matrícula, precinto, y remolques relacionados.
+
+```javascript
+cartaporte.createNodeContenedor({
+  contenedor: {
+    tipoContenedor: "CM011",
+    fechaCertificacionCcp: "2024-06-20T11:11:00",
+    placaVmCcp: "JNG7683",
+    idCcpRelacionado: idccp,
+    matriculaContenedor: "Matricula",
+    numPrecinto: "123456789",
+  },
+  remolques: [
+    {
+      placaCcp: "456789v",
+      subTipoRemCcp: "CTR001",
+    },
+  ],
+});
+```
+
+USO POR INSTANCIA: 0 a ilimitados.
+
+#### contenedor
+
+| Propiedades           | Tipo   | Descripción                                               |
+| --------------------- | ------ | --------------------------------------------------------- |
+| tipoContenedor        | string | Clave del tipo de contenedor utilizado.                   |
+| fechaCertificacionCcp | string | Fecha en que se certificó el contenedor.                  |
+| placaVmCcp            | string | Placa del vehículo marítimo que transporta el contenedor. |
+| idCcpRelacionado      | string | ID de CCP relacionado con el contenedor.                  |
+| matriculaContenedor   | string | Matrícula del contenedor.                                 |
+| numPrecinto           | string | Número de precinto o sello de seguridad del contenedor.   |
+
+#### remolques
+
+| Propiedades   | Tipo   | Descripción                              |
+| ------------- | ------ | ---------------------------------------- |
+| placaCcp      | string | Placa del remolque o unidad de arrastre. |
+| subTipoRemCcp | string | Clave del subtipo de remolque.           |
+
+## **CartaPorteAereo**
+
+Clase para la creación de carta porte con medio de tranporte aéreo.
+
+```javascript
+const cartaporte = new CartaPorteAereo(cfdi, configCfdi);
+```
+
+| Argumento  | Tipo          | Descripción                                                                         |
+| ---------- | ------------- | ----------------------------------------------------------------------------------- |
+| cfdi       | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
+| configCfdi | ConfigCfdi    | Instancia de ConfigCfdi previamente hecha.                                          |
+
+### **createNodeAereo**
+
+Te permite establecer los atributos para el nodo `cartaporte31:TransporteAereo`
+
+```javascript
+cartaporte.createNodeAereo({
+  permSct: "TPAF01",
+  numPermisoSct: "23456789",
+  codigoTransportista: "CA143",
+  numeroGuia: "acUbYlBVTmlzx",
+  matriculaAeronave: "61E5-WZ",
+  nombreAseg: "NombreAseg",
+  numPolizaSeguro: "P345678",
+  lugarContrato: "LugarContrato",
+  rfcEmbarcador: "EKU9003173C9",
+  nombreEmbarcador: "Embarcador",
+  numRegIdTribEmbarc: "H78J238032",
+  residenciaFiscalEmbarc: "USA",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Argumento              | Tipo   | Descripción                                                           |
+| ---------------------- | ------ | --------------------------------------------------------------------- |
+| permSct                | string | Clave del permiso SICT del transportista aéreo.                       |
+| numPermisoSct          | string | Número del permiso SICT.                                              |
+| codigoTransportista    | string | Código identificador del transportista aéreo.                         |
+| numeroGuia             | string | Número de guía aérea.                                                 |
+| matriculaAeronave      | string | (opcional) Matrícula de la aeronave que realiza el traslado.          |
+| nombreAseg             | string | (opcional) Nombre de la aseguradora del transporte aéreo.             |
+| numPolizaSeguro        | string | (opcional) Número de póliza de seguro correspondiente.                |
+| lugarContrato          | string | (opcional) Lugar donde se celebró el contrato de transporte.          |
+| rfcEmbarcador          | string | (opcional) RFC del embarcador o remitente de la mercancía.            |
+| nombreEmbarcador       | string | (opcional) Nombre del embarcador o remitente.                         |
+| numRegIdTribEmbarc     | string | (opcional) Número de registro fiscal en el extranjero del embarcador. |
+| residenciaFiscalEmbarc | string | (opcional) Clave del país de residencia fiscal del embarcador.        |

@@ -96,6 +96,7 @@ export interface IObjectNodeMercancias {
   "cartaporte31:Mercancia": IObjectNodeMerc[];
   "cartaporte31:Autotransporte"?: IObjectNodeAutotransporte;
   "cartaporte31:TransporteMaritimo"?: IObjectNodeMaritimo;
+  "cartaporte31:TransporteAereo"?: IObjectNodeAereo;
 }
 export interface INodeMercancia {
   mercancia: INodeMerc;
@@ -262,6 +263,18 @@ export interface INodeMaritimo extends INodeTransporte {
   nombreAseg?: string;
   numPolizaSeguro?: string;
 }
+export interface INodeAereo extends INodeTransporte {
+  matriculaAeronave?: string;
+  nombreAseg?: string;
+  numPolizaSeguro?: string;
+  numeroGuia: string;
+  lugarContrato?: string;
+  codigoTransportista: string;
+  rfcEmbarcador?: string;
+  numRegIdTribEmbarc?: string;
+  residenciaFiscalEmbarc?: string;
+  nombreEmbarcador?: string;
+}
 interface IObjectNodeTransporte {
   "@_PermSCT": string;
   "@_NumPermisoSCT": string;
@@ -288,6 +301,18 @@ export interface IObjectNodeMaritimo extends IObjectNodeTransporte {
   "@_NombreAseg"?: string;
   "@_NumPolizaSeguro"?: string;
   "cartaporte31:Contenedor"?: IObjectNodeContenedor[];
+}
+export interface IObjectNodeAereo extends IObjectNodeTransporte {
+  "@_MatriculaAeronave"?: string;
+  "@_NombreAseg"?: string;
+  "@_NumPolizaSeguro"?: string;
+  "@_NumeroGuia": string;
+  "@_LugarContrato"?: string;
+  "@_CodigoTransportista": string;
+  "@_RFCEmbarcador"?: string;
+  "@_NumRegIdTribEmbarc"?: string;
+  "@_ResidenciaFiscalEmbarc"?: string;
+  "@_NombreEmbarcador"?: string;
 }
 export interface INodeContenedorM {
   contenedor: INodeContenedor;
