@@ -14,10 +14,28 @@
       "require": "./dist/index.cjs"
     }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "keywords": [
+    "nodejs",
+    "sat",
+    "cfdi",
+    "carta porte",
+    "xml",
+    "json"
+  ],
+  "author": "Luis Martinez",
+  "license": "MIT",
+  "description": "Herramienta para generar y manejar CFDI 4.0. Incluye utilidades para trabajar con certificados digitales, generar XML o JSON sellados y sin sellar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Luisjossam/cfdi-sat-nodejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Luisjossam/cfdi-sat-nodejs/issues"
+  },
   "devDependencies": {
     "@types/node": "^24.0.3",
     "@types/node-forge": "^1.3.11",
