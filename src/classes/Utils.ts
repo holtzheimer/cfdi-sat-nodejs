@@ -33,5 +33,20 @@ class Utils {
     partes[0] = partes[0].slice(0, 5);
     return `CCC${partes.join("-")}`;
   }
+  protected simplifyJson(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.simplifyJson(item));
+    } else if (typeof obj === "object" && obj !== null) {
+      const simplified: any = {};
+      for (const key in obj) {
+        let newKey = key;
+        if (newKey.startsWith("@_")) newKey = newKey.slice(2);
+        if (newKey.includes(":")) newKey = newKey.split(":")[1];
+        simplified[newKey] = this.simplifyJson(obj[key]);
+      }
+      return simplified;
+    }
+    return obj;
+  }
 }
 export default Utils;

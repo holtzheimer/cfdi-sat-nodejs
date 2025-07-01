@@ -31,8 +31,8 @@ Si planeas actualizar, asegúrate de leer la documentación actual para adaptar 
   - [createNodeAddenda](#createNodeAddenda)
   - [createXml](#createXml)
   - [createXmlSellado](#createXmlSellado)
-- [CatalogoSat](#CatalogoSat)
-  - [search](#search)
+  - [createJson](#createJson)
+  - [createJsonSellado](#createJsonSellado)
 - [CartaPorte](#CartaPorte)
   - [setAttributes](#setAttributes)
   - [createNodeRegimenesAduaneros](#createNodeRegimenesAduaneros)
@@ -51,6 +51,12 @@ Si planeas actualizar, asegúrate de leer la documentación actual para adaptar 
   - [createNodeContenedor](#createNodeContenedor)
 - [CartaPorteAereo](#CartaPorteAereo)
   - [createNodeAereo](#createNodeAereo)
+- [CartaPorteFerroviario](#CartaPorteFerroviario)
+  - [createNodeFerroviario](#createNodeFerroviario)
+  - [createNodeDerechoDePaso](#createNodeDerechoDePaso)
+  - [createNodeCarro](#createNodeCarro)
+- [CatalogoSat](#CatalogoSat)
+  - [search](#search)
 
 ## **Instalación**
 
@@ -616,604 +622,29 @@ Este método genera el XML sellado.
 await fac.createXmlSellado();
 ```
 
-## **CatalogoSat**
+### **createJson**
 
-`CFDI-SAT-NODEJS` contiene los catalogos actualizados del SAT en formato JSON.
-
-Debido a que algunos catálogos contienen miles de registros, esta clase implementa un sistema de lectura por flujo que permite procesar los datos de forma secuencial, sin necesidad de cargar el archivo completo en memoria. Esto garantiza búsquedas optimizadas y un mejor rendimiento.
+Este método le genera el JSON.
 
 ```javascript
-const { CatalogoSat } = require("cfdi-sat-nodejs");
-const cat = new CatalogoSat("tipo_factor");
+fac.createJson(simplified);
 ```
 
-### **search**
+| Argumento  | Tipo    | Descripción                                                                                                                                                          |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| simplified | boolean | (opcional) Si se establece en `true`, genera un JSON más limpio sin prefijos (como `"cfdi:"`) ni atributos con `"@_"`. Por defecto, se mantiene el formato completo. |
 
-Permite buscar un registro específico dentro del catálogo utilizando una combinación clave/valor. El método recorre el catálogo de forma eficiente hasta encontrar el primer resultado coincidente.
+### **createJsonSellado**
 
-Si encuentra registros que cumpla con los criterios, lo devuelve como array. Si no encuentra coincidencias o si la clave proporcionada no existe en el catálogo, devuelve un error.
+Este método genera el JSON sellado.
 
 ```javascript
-const cat = new CatalogoSat("ClaveProdServ");
-const result = await cat.search("clave", 10101500);
-
-//output
-/*
-[
-    {
-        clave: 10101500,
-        descripcion: 'Animales vivos de granja',
-        incluir_iva_trasladado: 'Opcional',
-        incluir_ieps_trasladado: 'Opcional',
-        estimulo_franja_fronteriza: 1,
-        palabras_similares: null
-    }
-]
-*/
+await fac.createJsonSellado(simplified);
 ```
 
-LISTA DE CATALOGOS DISPONIBLES
-
-#### Aduana
-
-```javascript
-{
-    "clave": 1,
-    "descripcion": "ACAPULCO, ACAPULCO DE JUAREZ, GUERRERO."
-}
-```
-
-#### ClaveProdServ
-
-```javascript
-{
-    "clave": "01010101",
-    "descripcion": "No existe en el catálogo",
-    "incluir_iva_trasladado": "Opcional",
-    "incluir_ieps_trasladado": "Opcional",
-    "estimulo_franja_fronteriza": 0,
-    "palabras_similares": "Público en general"
-}
-```
-
-#### ClaveProdServCp
-
-```javascript
-{
-    "clave": 10101500,
-    "descripcion": "Animales vivos de granja",
-    "palabras_similares": null,
-    "material_peligroso": 0
-}
-```
-
-#### ClaveTipoCarga
-
-```javascript
-{
-    "clave": "CGS",
-    "descripcion": "Carga General Suelta"
-}
-```
-
-#### ClaveTransporte
-
-```javascript
-{
-    "clave_transporte": "01",
-    "descripcion": "Autotransporte"
-}
-```
-
-#### ClaveUnidad
-
-```javascript
-{
-    "clave": 18,
-    "nombre": "Tambor de cincuenta y cinco galones (EUA)",
-    "descripcion": null,
-    "nota": "Las unidades marcadas como borradas en el catálogo internacional de UNECE, serán retenidas indefinidamente en las listas de códigos. En su caso, estas unidades podrán ser reinstalado a través del proceso de mantenimiento.",
-    "simbolo": null
-}
-```
-
-#### ClaveUnidadPeso
-
-```javascript
-{
-    "clave": "Tu",
-    "nombre": "Contenedor externo",
-    "descripcion": "Tipo de caja de contención que sirve como contenedor de transporte externo, no especificado como equipo de transporte.",
-    "nota": null,
-    "simbolo": null,
-    "bandera": "Embalaje"
-}
-```
-
-#### CodigoPostalParteUno
-
-Abarca del CP 20000 al 64279.
-
-```javascript
-{
-    "codigo_postal": "20000",
-    "estado": "AGU",
-    "municipio": "001",
-    "localidad": "01",
-    "estimulo_franja_fronteriza": 0
-}
-```
-
-#### CodigoPostalParteDos
-
-Abarca del 65000 al 99999
-
-```javascript
-{
-    "codigo_postal": "65000",
-    "estado": "NLE",
-    "municipio": "005",
-    "localidad": null,
-    "estimulo_franja_fronteriza": 1
-}
-```
-
-#### CodigoTransporteAereo
-
-```javascript
-{
-    "clave": "CA001",
-    "nacionalidad": "Asiáticas",
-    "nombre_aerolinea": "All Nippon Airways LTD",
-    "designador_oaci": "ANA"
-}
-```
-
-#### ColoniaParteUno, ColoniaParteDos, ColoniaParteTres
-
-```javascript
-{
-    "clave": "0001",
-    "codigo_postal": "01000",
-    "nombre_asentamiento": "San Ángel"
-}
-```
-
-#### CondicionesEspeciales
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Congelados"
-}
-```
-
-#### ConfigAutoTransporte
-
-```javascript
-{
-    "clave_nomenclatura": "VL",
-    "descripcion": "Vehículo ligero de carga (2 llantas en el eje delantero y 2 llantas en el eje trasero)",
-    "numero_ejes": 2,
-    "numero_llantas": 4,
-    "remolque": "0, 1"
-}
-```
-
-#### ConfigMaritima
-
-```javascript
-{
-    "clave": "B01",
-    "descripcion": "Abastecedor"
-}
-```
-
-#### Contenedor
-
-```javascript
-{
-    "clave": "TC01",
-    "tipo_contenedor": "20'",
-    "descripcion": "Contenedor de 6.1 Mts de longitud"
-}
-```
-
-#### ContenedorMaritimo
-
-```javascript
-{
-    "clave": "CM001",
-    "descripcion": "Contenedores refrigerados de 20FT"
-}
-```
-
-#### DerechosDePaso
-
-```javascript
-{
-    "clave": "CDP001",
-    "derecho_paso": "D-1",
-    "entre": "Torreón (Km. DA-251+000) ",
-    "hasta": "Villa Juárez (Km. DA-238+000)",
-    "otorga_recibe": "Recibe",
-    "concesionario": "Vía ferrea del Noroeste (Actualmente Kansas City Southern de México, S.A de C.V.)"
-}
-```
-
-#### DocumentoAduanero
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Pedimento"
-}
-```
-
-#### Estaciones
-
-```javascript
-{
-    "clave": "PM001",
-    "descripcion": "Rosarito",
-    "clave_transporte": "02",
-    "nacionalidad": "México",
-    "designador_iata": null,
-    "linea_ferrea": null
-}
-```
-
-#### Estado
-
-```javascript
-{
-    "clave": "AGU",
-    "pais": "MEX",
-    "nombre_estado": "Aguascalientes"
-}
-```
-
-#### Exportacion
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "No aplica"
-}
-```
-
-#### FiguraTransporte
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Operador"
-}
-```
-
-#### FormaFarmaceutica
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Tableta"
-}
-```
-
-#### FormaPago
-
-```javascript
-{
-    "clave": 1,
-    "descripcion": "Efectivo",
-    "bancarizado": "No"
-}
-```
-
-#### Impuestos
-
-```javascript
-{
-    "clave": 1,
-    "descripcion": "ISR",
-    "retencion": "Si",
-    "traslado": "No"
-}
-```
-
-#### Localidad
-
-```javascript
-{
-    "localidad": "01",
-    "estado": "AGU",
-    "descripcion": "Aguascalientes"
-}
-```
-
-#### MaterialPeligroso
-
-```javascript
-{
-    "clave": "0004",
-    "descripcion": "PICRATO AMÓNICO seco o humedecido con menos del 10%, en masa, de agua",
-    "clase_div": "1.1D",
-    "peligro_secundario": null,
-    "nombre_tecnico": null
-}
-```
-
-#### Meses
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Enero"
-}
-```
-
-#### MetodoPago
-
-```javascript
-{
-    "clave": "PUE",
-    "descripcion": "Pago en una sola exhibición"
-}
-```
-
-#### Moneda
-
-```javascript
-{
-    "clave": "AED",
-    "descripcion": "Dirham de EAU",
-    "decimales": 2,
-    "porcentaje_variacion": "500%"
-}
-```
-
-#### Municipio
-
-```javascript
-{
-    "municipio": "001",
-    "estado": "AGU",
-    "descripcion": "Aguascalientes"
-}
-```
-
-#### NumAutorizacionNaviero
-
-```javascript
-{
-    "num_autorizacion": "SCT418/068/2018",
-    "inicio_vigencia": "2018-12-26",
-    "fin_vigencia": "2023-12-27"
-}
-```
-
-#### NumPedimentoAduana
-
-```javascript
-{
-    "clave": "01",
-    "patente": "3173",
-    "ejercicio": 2007,
-    "cantidad": "999999"
-}
-```
-
-#### ObjetoImp
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "No objeto de impuesto."
-}
-```
-
-#### Pais
-
-```javascript
-{
-    "clave": "MEX",
-    "descripcion": "México"
-}
-```
-
-#### ParteTransporte
-
-```javascript
-{
-    "clave": "PT01",
-    "descripcion": "Camión unitario"
-}
-```
-
-#### PatenteAduanal
-
-```javascript
-{
-    "patente": "0000"
-}
-```
-
-#### Periodicidad
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Diario"
-}
-```
-
-#### RegimenAduanero
-
-```javascript
-{
-    "clave": "IMD",
-    "descripcion": "Definitivo de importación.",
-    "importacion_exportacion": "Entrada"
-}
-```
-
-#### RegimenFiscal
-
-```javascript
-{
-    "clave": "601",
-    "descripcion": "General de Ley Personas Morales",
-    "fisica": "No",
-    "moral": "Sí"
-}
-```
-
-#### RegistroIstmo
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Coatzacoalcos I"
-}
-```
-
-#### SectorCofepris
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Medicamento"
-}
-```
-
-#### SubtipoRemolque
-
-```javascript
-{
-    "clave_remolque": "CTR001",
-    "remolque_semirremolque": "Caballete"
-}
-```
-
-#### TasaOCuota
-
-```javascript
-{
-    "tipo": "Fijo",
-    "valor_minimo": null,
-    "valor_maximo": 0,
-    "impuesto": "IVA",
-    "factor": "Tasa",
-    "traslado": "Sí",
-    "retencion": "No"
-}
-```
-
-#### TipoCarro
-
-```javascript
-{
-    "clave": "TC01",
-    "tipo_carro": "Furgón",
-    "contenedor": 0
-}
-```
-
-#### TipoDeComprobante
-
-```javascript
-{
-    "clave": "I",
-    "descripcion": "Ingreso",
-    "valor_maximo": "999999999999999999.999999"
-}
-```
-
-#### TipoDeServicio
-
-```javascript
-{
-    "clave": "TS01",
-    "descripcion": "Carros Ferroviarios",
-    "contenedor": 0
-}
-```
-
-#### TipoEmbalaje
-
-```javascript
-{
-    "clave": "1A1",
-    "descripcion": "Bidones (Tambores) de Acero 1 de tapa no desmontable"
-}
-```
-
-#### TipoEstacion
-
-```javascript
-{
-    "clave_estacion": "01",
-    "descripcion": "Origen Nacional",
-    "clave_transporte": "02, 03 y 04"
-}
-```
-
-#### TipoFactor
-
-```javascript
-{
-    "descripcion": "Tasa"
-}
-```
-
-#### TipoMateria
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Materia prima"
-}
-```
-
-#### TipoPermiso
-
-```javascript
-{
-    "clave": "TPAF01",
-    "descripcion": "Autotransporte Federal de carga general.",
-    "clave_transporte": "01"
-}
-```
-
-#### TipoRelacion
-
-```javascript
-{
-    "clave": "01",
-    "descripcion": "Nota de crédito de los documentos relacionados"
-}
-```
-
-#### TipoTrafico
-
-```javascript
-{
-    "clave": "TT01",
-    "descripcion": "Tráfico local"
-}
-```
-
-#### UsoCfdi
-
-```javascript
-{
-    "clave": "G01",
-    "descripcion": "Adquisición de mercancías.",
-    "fisica": "Sí",
-    "moral": "Sí",
-    "regimen_receptor": "601, 603, 606, 612, 620, 621, 622, 623, 624, 625,626"
-}
-```
+| Argumento  | Tipo    | Descripción                                                                                                                                                          |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| simplified | boolean | (opcional) Si se establece en `true`, genera un JSON más limpio sin prefijos (como `"cfdi:"`) ni atributos con `"@_"`. Por defecto, se mantiene el formato completo. |
 
 ## **CartaPorte**
 
@@ -1221,6 +652,7 @@ Para generar complemento carta porte puede usar las distintas clases especificas
 
 [Para autotransportes](#CartaPorteAutotransporte)
 [Para maritimos](#CartaPorteMaritimo)
+[Para aéreo](#CartaPorteAereo)
 
 En esta sección se documenta los métodos usados por todos los medios de transporte.
 
@@ -1866,7 +1298,7 @@ cartaporte.createNodeAereo({
 
 USO POR INSTANCIA: 1
 
-| Argumento              | Tipo   | Descripción                                                           |
+| Propiedades            | Tipo   | Descripción                                                           |
 | ---------------------- | ------ | --------------------------------------------------------------------- |
 | permSct                | string | Clave del permiso SICT del transportista aéreo.                       |
 | numPermisoSct          | string | Número del permiso SICT.                                              |
@@ -1880,3 +1312,698 @@ USO POR INSTANCIA: 1
 | nombreEmbarcador       | string | (opcional) Nombre del embarcador o remitente.                         |
 | numRegIdTribEmbarc     | string | (opcional) Número de registro fiscal en el extranjero del embarcador. |
 | residenciaFiscalEmbarc | string | (opcional) Clave del país de residencia fiscal del embarcador.        |
+
+## **CartaPorteFerroviario**
+
+Clase para la creación de carta porte con medio de tranporte ferroviario.
+
+```javascript
+const cartaporte = new CartaPorteFerroviario(cfdi, configCfdi);
+```
+
+| Argumento  | Tipo          | Descripción                                                                         |
+| ---------- | ------------- | ----------------------------------------------------------------------------------- |
+| cfdi       | string / json | Contenido del CFDI de tipo ingreso previamente generado como string o como un json. |
+| configCfdi | ConfigCfdi    | Instancia de ConfigCfdi previamente hecha.                                          |
+
+### **createNodeFerroviario**
+
+Te permite establecer los atributos para el nodo `cartaporte31:TransporteFerroviario`
+
+```javascript
+cartaporte.createNodeFerroviario({
+  tipoDeServicio: "TS01",
+  tipoDeTrafico: "TT01",
+  nombreAseg: "NombreAsg",
+  numPolizaSeguro: "3456789",
+});
+```
+
+USO POR INSTANCIA: 1
+
+| Propiedades     | Tipo            | Descripción                                                     |
+| --------------- | --------------- | --------------------------------------------------------------- |
+| tipoDeServicio  | string          | Clave que indica el tipo de servicio ferroviario.               |
+| tipoDeTrafico   | string          | Clave que indica el tipo de tráfico.                            |
+| nombreAseg      | string          | (opcional) Nombre de la aseguradora del transporte ferroviario. |
+| numPolizaSeguro | string / number | (opcional) Número de póliza de seguro correspondiente.          |
+
+### **createNodeDerechoDePaso**
+
+Genera el nodo `cartaporte31:DerechosDePaso` con la información del derecho de paso ferroviario.
+
+```javascript
+cartaporte.createNodeDerechoDePaso({
+  kilometrajePagado: "100",
+  tipoDerechoDePaso: "CDP114",
+});
+```
+
+USO POR INSTANCIA: 0 a ilimitados.
+
+| Propiedades       | Tipo            | Descripción                                             |
+| ----------------- | --------------- | ------------------------------------------------------- |
+| kilometrajePagado | string / number | Distancia cubierta bajo el derecho de paso ferroviario. |
+| tipoDerechoDePaso | string          | Clave que indica el tipo de derecho de paso utilizado.  |
+
+### **createNodeCarro**
+
+Genera el nodo `cartaporte31:Carro` correspondiente al transporte ferroviario, incluyendo contenedores transportados en él.
+
+```javascript
+cartaporte.createNodeCarro({
+  carro: {
+    guiaCarro: "1236",
+    matriculaCarro: "RTYUI8",
+    tipoCarro: "TC08",
+    toneladasNetasCarro: 10,
+  },
+  contenedores: [
+    {
+      pesoContenedorVacio: 5,
+      pesoNetoMercancia: 8,
+      tipoContenedor: "TC01",
+    },
+  ],
+});
+```
+
+USO POR INSTANCIA: 1 a ilimitados.
+
+#### carro
+
+| Propiedades         | Tipo   | Descripción                                        |
+| ------------------- | ------ | -------------------------------------------------- |
+| guiaCarro           | string | Número de guía asociado al carro ferroviario.      |
+| matriculaCarro      | string | Matrícula o número identificador del carro.        |
+| tipoCarro           | string | Clave del tipo de carro ferroviario utilizado.     |
+| toneladasNetasCarro | string | Toneladas netas de carga transportada en el carro. |
+
+#### contenedores
+
+Array opcional con objetos correspondientes a los contenedores.
+
+| Propiedades         | Tipo            | Descripción                               |
+| ------------------- | --------------- | ----------------------------------------- |
+| pesoContenedorVacio | string / number | Peso del contenedor cuando está vacío.    |
+| pesoNetoMercancia   | string / number | Peso neto de la mercancía contenida.      |
+| tipoContenedor      | string          | Clave del tipo de contenedor ferroviario. |
+
+## **CatalogoSat**
+
+`CFDI-SAT-NODEJS` contiene los catalogos actualizados del SAT en formato JSON.
+
+Debido a que algunos catálogos contienen miles de registros, esta clase implementa un sistema de lectura por flujo que permite procesar los datos de forma secuencial, sin necesidad de cargar el archivo completo en memoria. Esto garantiza búsquedas optimizadas y un mejor rendimiento.
+
+```javascript
+const { CatalogoSat } = require("cfdi-sat-nodejs");
+const cat = new CatalogoSat("tipo_factor");
+```
+
+### **search**
+
+Permite buscar un registro específico dentro del catálogo utilizando una combinación clave/valor. El método recorre el catálogo de forma eficiente hasta encontrar el primer resultado coincidente.
+
+Si encuentra registros que cumpla con los criterios, lo devuelve como array. Si no encuentra coincidencias o si la clave proporcionada no existe en el catálogo, devuelve un error.
+
+```javascript
+const cat = new CatalogoSat("ClaveProdServ");
+const result = await cat.search("clave", 10101500);
+
+//output
+/*
+[
+    {
+        clave: 10101500,
+        descripcion: 'Animales vivos de granja',
+        incluir_iva_trasladado: 'Opcional',
+        incluir_ieps_trasladado: 'Opcional',
+        estimulo_franja_fronteriza: 1,
+        palabras_similares: null
+    }
+]
+*/
+```
+
+LISTA DE CATALOGOS DISPONIBLES
+
+#### Aduana
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "ACAPULCO, ACAPULCO DE JUAREZ, GUERRERO."
+}
+```
+
+#### ClaveProdServ
+
+```javascript
+{
+    "clave": "01010101",
+    "descripcion": "No existe en el catálogo",
+    "incluir_iva_trasladado": "Opcional",
+    "incluir_ieps_trasladado": "Opcional",
+    "estimulo_franja_fronteriza": 0,
+    "palabras_similares": "Público en general"
+}
+```
+
+#### ClaveProdServCp
+
+```javascript
+{
+    "clave": 10101500,
+    "descripcion": "Animales vivos de granja",
+    "palabras_similares": null,
+    "material_peligroso": 0
+}
+```
+
+#### ClaveTipoCarga
+
+```javascript
+{
+    "clave": "CGS",
+    "descripcion": "Carga General Suelta"
+}
+```
+
+#### ClaveTransporte
+
+```javascript
+{
+    "clave_transporte": "01",
+    "descripcion": "Autotransporte"
+}
+```
+
+#### ClaveUnidad
+
+```javascript
+{
+    "clave": 18,
+    "nombre": "Tambor de cincuenta y cinco galones (EUA)",
+    "descripcion": null,
+    "nota": "Las unidades marcadas como borradas en el catálogo internacional de UNECE, serán retenidas indefinidamente en las listas de códigos. En su caso, estas unidades podrán ser reinstalado a través del proceso de mantenimiento.",
+    "simbolo": null
+}
+```
+
+#### ClaveUnidadPeso
+
+```javascript
+{
+    "clave": "Tu",
+    "nombre": "Contenedor externo",
+    "descripcion": "Tipo de caja de contención que sirve como contenedor de transporte externo, no especificado como equipo de transporte.",
+    "nota": null,
+    "simbolo": null,
+    "bandera": "Embalaje"
+}
+```
+
+#### CodigoPostalParteUno
+
+Abarca del CP 20000 al 64279.
+
+```javascript
+{
+    "codigo_postal": "20000",
+    "estado": "AGU",
+    "municipio": "001",
+    "localidad": "01",
+    "estimulo_franja_fronteriza": 0
+}
+```
+
+#### CodigoPostalParteDos
+
+Abarca del 65000 al 99999
+
+```javascript
+{
+    "codigo_postal": "65000",
+    "estado": "NLE",
+    "municipio": "005",
+    "localidad": null,
+    "estimulo_franja_fronteriza": 1
+}
+```
+
+#### CodigoTransporteAereo
+
+```javascript
+{
+    "clave": "CA001",
+    "nacionalidad": "Asiáticas",
+    "nombre_aerolinea": "All Nippon Airways LTD",
+    "designador_oaci": "ANA"
+}
+```
+
+#### ColoniaParteUno, ColoniaParteDos, ColoniaParteTres
+
+```javascript
+{
+    "clave": "0001",
+    "codigo_postal": "01000",
+    "nombre_asentamiento": "San Ángel"
+}
+```
+
+#### CondicionesEspeciales
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Congelados"
+}
+```
+
+#### ConfigAutoTransporte
+
+```javascript
+{
+    "clave_nomenclatura": "VL",
+    "descripcion": "Vehículo ligero de carga (2 llantas en el eje delantero y 2 llantas en el eje trasero)",
+    "numero_ejes": 2,
+    "numero_llantas": 4,
+    "remolque": "0, 1"
+}
+```
+
+#### ConfigMaritima
+
+```javascript
+{
+    "clave": "B01",
+    "descripcion": "Abastecedor"
+}
+```
+
+#### Contenedor
+
+```javascript
+{
+    "clave": "TC01",
+    "tipo_contenedor": "20'",
+    "descripcion": "Contenedor de 6.1 Mts de longitud"
+}
+```
+
+#### ContenedorMaritimo
+
+```javascript
+{
+    "clave": "CM001",
+    "descripcion": "Contenedores refrigerados de 20FT"
+}
+```
+
+#### DerechosDePaso
+
+```javascript
+{
+    "clave": "CDP001",
+    "derecho_paso": "D-1",
+    "entre": "Torreón (Km. DA-251+000) ",
+    "hasta": "Villa Juárez (Km. DA-238+000)",
+    "otorga_recibe": "Recibe",
+    "concesionario": "Vía ferrea del Noroeste (Actualmente Kansas City Southern de México, S.A de C.V.)"
+}
+```
+
+#### DocumentoAduanero
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Pedimento"
+}
+```
+
+#### Estaciones
+
+```javascript
+{
+    "clave": "PM001",
+    "descripcion": "Rosarito",
+    "clave_transporte": "02",
+    "nacionalidad": "México",
+    "designador_iata": null,
+    "linea_ferrea": null
+}
+```
+
+#### Estado
+
+```javascript
+{
+    "clave": "AGU",
+    "pais": "MEX",
+    "nombre_estado": "Aguascalientes"
+}
+```
+
+#### Exportacion
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "No aplica"
+}
+```
+
+#### FiguraTransporte
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Operador"
+}
+```
+
+#### FormaFarmaceutica
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Tableta"
+}
+```
+
+#### FormaPago
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "Efectivo",
+    "bancarizado": "No"
+}
+```
+
+#### Impuestos
+
+```javascript
+{
+    "clave": 1,
+    "descripcion": "ISR",
+    "retencion": "Si",
+    "traslado": "No"
+}
+```
+
+#### Localidad
+
+```javascript
+{
+    "localidad": "01",
+    "estado": "AGU",
+    "descripcion": "Aguascalientes"
+}
+```
+
+#### MaterialPeligroso
+
+```javascript
+{
+    "clave": "0004",
+    "descripcion": "PICRATO AMÓNICO seco o humedecido con menos del 10%, en masa, de agua",
+    "clase_div": "1.1D",
+    "peligro_secundario": null,
+    "nombre_tecnico": null
+}
+```
+
+#### Meses
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Enero"
+}
+```
+
+#### MetodoPago
+
+```javascript
+{
+    "clave": "PUE",
+    "descripcion": "Pago en una sola exhibición"
+}
+```
+
+#### Moneda
+
+```javascript
+{
+    "clave": "AED",
+    "descripcion": "Dirham de EAU",
+    "decimales": 2,
+    "porcentaje_variacion": "500%"
+}
+```
+
+#### Municipio
+
+```javascript
+{
+    "municipio": "001",
+    "estado": "AGU",
+    "descripcion": "Aguascalientes"
+}
+```
+
+#### NumAutorizacionNaviero
+
+```javascript
+{
+    "num_autorizacion": "SCT418/068/2018",
+    "inicio_vigencia": "2018-12-26",
+    "fin_vigencia": "2023-12-27"
+}
+```
+
+#### NumPedimentoAduana
+
+```javascript
+{
+    "clave": "01",
+    "patente": "3173",
+    "ejercicio": 2007,
+    "cantidad": "999999"
+}
+```
+
+#### ObjetoImp
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "No objeto de impuesto."
+}
+```
+
+#### Pais
+
+```javascript
+{
+    "clave": "MEX",
+    "descripcion": "México"
+}
+```
+
+#### ParteTransporte
+
+```javascript
+{
+    "clave": "PT01",
+    "descripcion": "Camión unitario"
+}
+```
+
+#### PatenteAduanal
+
+```javascript
+{
+    "patente": "0000"
+}
+```
+
+#### Periodicidad
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Diario"
+}
+```
+
+#### RegimenAduanero
+
+```javascript
+{
+    "clave": "IMD",
+    "descripcion": "Definitivo de importación.",
+    "importacion_exportacion": "Entrada"
+}
+```
+
+#### RegimenFiscal
+
+```javascript
+{
+    "clave": "601",
+    "descripcion": "General de Ley Personas Morales",
+    "fisica": "No",
+    "moral": "Sí"
+}
+```
+
+#### RegistroIstmo
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Coatzacoalcos I"
+}
+```
+
+#### SectorCofepris
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Medicamento"
+}
+```
+
+#### SubtipoRemolque
+
+```javascript
+{
+    "clave_remolque": "CTR001",
+    "remolque_semirremolque": "Caballete"
+}
+```
+
+#### TasaOCuota
+
+```javascript
+{
+    "tipo": "Fijo",
+    "valor_minimo": null,
+    "valor_maximo": 0,
+    "impuesto": "IVA",
+    "factor": "Tasa",
+    "traslado": "Sí",
+    "retencion": "No"
+}
+```
+
+#### TipoCarro
+
+```javascript
+{
+    "clave": "TC01",
+    "tipo_carro": "Furgón",
+    "contenedor": 0
+}
+```
+
+#### TipoDeComprobante
+
+```javascript
+{
+    "clave": "I",
+    "descripcion": "Ingreso",
+    "valor_maximo": "999999999999999999.999999"
+}
+```
+
+#### TipoDeServicio
+
+```javascript
+{
+    "clave": "TS01",
+    "descripcion": "Carros Ferroviarios",
+    "contenedor": 0
+}
+```
+
+#### TipoEmbalaje
+
+```javascript
+{
+    "clave": "1A1",
+    "descripcion": "Bidones (Tambores) de Acero 1 de tapa no desmontable"
+}
+```
+
+#### TipoEstacion
+
+```javascript
+{
+    "clave_estacion": "01",
+    "descripcion": "Origen Nacional",
+    "clave_transporte": "02, 03 y 04"
+}
+```
+
+#### TipoFactor
+
+```javascript
+{
+    "descripcion": "Tasa"
+}
+```
+
+#### TipoMateria
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Materia prima"
+}
+```
+
+#### TipoPermiso
+
+```javascript
+{
+    "clave": "TPAF01",
+    "descripcion": "Autotransporte Federal de carga general.",
+    "clave_transporte": "01"
+}
+```
+
+#### TipoRelacion
+
+```javascript
+{
+    "clave": "01",
+    "descripcion": "Nota de crédito de los documentos relacionados"
+}
+```
+
+#### TipoTrafico
+
+```javascript
+{
+    "clave": "TT01",
+    "descripcion": "Tráfico local"
+}
+```
+
+#### UsoCfdi
+
+```javascript
+{
+    "clave": "G01",
+    "descripcion": "Adquisición de mercancías.",
+    "fisica": "Sí",
+    "moral": "Sí",
+    "regimen_receptor": "601, 603, 606, 612, 620, 621, 622, 623, 624, 625,626"
+}
+```

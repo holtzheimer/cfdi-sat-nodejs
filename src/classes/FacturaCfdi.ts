@@ -24,8 +24,9 @@ import ConfigCfdi from "./ConfigCfdi";
 import { create } from "xmlbuilder2";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 import generateCadenaOriginal from "../utils/generateCadenaOriginal";
+import Utils from "./Utils";
 
-class FacturaCfdi {
+class FacturaCfdi extends Utils {
   private readonly config_cfdi: ConfigCfdi;
   private node_comprobante: INodeComprobante = {
     serie: "",
@@ -62,6 +63,7 @@ class FacturaCfdi {
     attributes: {},
   };
   constructor(config_cfdi: ConfigCfdi) {
+    super();
     this.config_cfdi = config_cfdi;
   }
   public createNodeComprobante(options: INodeComprobante) {
@@ -89,6 +91,11 @@ class FacturaCfdi {
   public createXml(): string {
     return this.generateXml();
   }
+  public createJson(simplified = false) {
+    const xml = this.createXml();
+    const json = Utils.xmlToJson(xml);
+    return simplified ? this.simplifyJson(json) : json;
+  }
   public async createXmlSellado() {
     const xml = this.generateXml();
     return generateCadenaOriginal(xml, this.config_cfdi)
@@ -105,6 +112,11 @@ class FacturaCfdi {
       .catch((err) => {
         throw new Error(err.message);
       });
+  }
+  public async createJsonSellado(simplified = false) {
+    const xml = await this.createXmlSellado();
+    const json = Utils.xmlToJson(xml);
+    return simplified ? this.simplifyJson(json) : json;
   }
   private generateXml(): string {
     const doc = create({

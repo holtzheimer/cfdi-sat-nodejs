@@ -97,6 +97,7 @@ export interface IObjectNodeMercancias {
   "cartaporte31:Autotransporte"?: IObjectNodeAutotransporte;
   "cartaporte31:TransporteMaritimo"?: IObjectNodeMaritimo;
   "cartaporte31:TransporteAereo"?: IObjectNodeAereo;
+  "cartaporte31:TransporteFerroviario"?: IObjectNodeFerroviario;
 }
 export interface INodeMercancia {
   mercancia: INodeMerc;
@@ -275,6 +276,12 @@ export interface INodeAereo extends INodeTransporte {
   residenciaFiscalEmbarc?: string;
   nombreEmbarcador?: string;
 }
+export interface INodeFerroviario {
+  tipoDeServicio: string;
+  tipoDeTrafico: string;
+  nombreAseg?: string;
+  numPolizaSeguro?: string | number;
+}
 interface IObjectNodeTransporte {
   "@_PermSCT": string;
   "@_NumPermisoSCT": string;
@@ -313,6 +320,49 @@ export interface IObjectNodeAereo extends IObjectNodeTransporte {
   "@_NumRegIdTribEmbarc"?: string;
   "@_ResidenciaFiscalEmbarc"?: string;
   "@_NombreEmbarcador"?: string;
+}
+export interface IObjectNodeFerroviario {
+  "@_TipoDeServicio": string;
+  "@_TipoDeTrafico": string;
+  "@_NombreAseg"?: string;
+  "@_NumPolizaSeguro"?: string | number;
+  "cartaporte31:DerechosDePaso"?: IObjectNodeDerechosDePaso[];
+  "cartaporte31:Carro": IObjectNodeCarro[];
+}
+export interface INodeDerechosDePaso {
+  tipoDerechoDePaso: string;
+  kilometrajePagado: string | number;
+}
+export interface INodeCarro {
+  carro: INodeCarroF;
+  contenedores?: INodeContenedorCarro[];
+}
+export interface INodeCarroF {
+  tipoCarro: string;
+  matriculaCarro: string;
+  guiaCarro: string;
+  toneladasNetasCarro: string | number;
+}
+export interface INodeContenedorCarro {
+  tipoContenedor: string;
+  pesoContenedorVacio: string | number;
+  pesoNetoMercancia: string | number;
+}
+export interface IObjectNodeDerechosDePaso {
+  "@_TipoDerechoDePaso": string;
+  "@_KilometrajePagado": string | number;
+}
+export interface IObjectNodeCarro {
+  "@_TipoCarro": string;
+  "@_MatriculaCarro": string;
+  "@_GuiaCarro": string;
+  "@_ToneladasNetasCarro": string | number;
+  "cartaporte31:Contenedor"?: IObjectNodeContenedorCarro[];
+}
+export interface IObjectNodeContenedorCarro {
+  "@_TipoContenedor": string;
+  "@_PesoContenedorVacio": string | number;
+  "@_PesoNetoMercancia": string | number;
 }
 export interface INodeContenedorM {
   contenedor: INodeContenedor;

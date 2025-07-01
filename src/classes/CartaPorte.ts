@@ -26,6 +26,11 @@ import {
   IObjectNodeContenedor,
   INodeAereo,
   IObjectNodeAereo,
+  INodeFerroviario,
+  IObjectNodeFerroviario,
+  INodeDerechosDePaso,
+  INodeCarro,
+  IObjectNodeCarro,
 } from "../interfaces/ICartaPorte";
 import Utils from "./Utils";
 import { mercancia_keys, merc_att_keys, merc_doc_aduanera, merc_guias_ident } from "../utils/mercancia_keys";
@@ -36,8 +41,9 @@ import generateCadenaOriginal from "../utils/generateCadenaOriginal";
 import ConfigCfdi from "./ConfigCfdi";
 import { contenedor_keys, maritimo_keys } from "../utils/maritimotransporte_key";
 import { aereo_keys } from "../utils/aereo_keys";
+import { ferroviario_keys } from "../utils/ferroviario_keys";
 
-abstract class CartaPorte {
+abstract class CartaPorte extends Utils {
   private readonly cfdi: string | object;
   private readonly config_cfdi: ConfigCfdi;
   private readonly type_cp: "A" | "M" | "F" | "AV";
@@ -80,16 +86,23 @@ abstract class CartaPorte {
     tipoEmbarcacion: "",
     unidadesDeArqBruto: "",
   };
-  private node_contenedores_maritimos: INodeContenedorM[] = [];
+  private readonly node_contenedores_maritimos: INodeContenedorM[] = [];
   private node_transporte_aereo: INodeAereo = {
     numPermisoSct: "",
     permSct: "",
     codigoTransportista: "",
     numeroGuia: "",
   };
+  private node_transporte_ferroviario: INodeFerroviario = {
+    tipoDeServicio: "",
+    tipoDeTrafico: "",
+  };
+  private readonly node_derechos_de_paso: INodeDerechosDePaso[] = [];
+  private readonly node_carro: INodeCarro[] = [];
   private readonly node_tipo_figura: INodeTipoFigura[] = [];
 
   constructor(cfdi: string | object, config_cfdi: ConfigCfdi, type: "A" | "M" | "F" | "AV") {
+    super();
     this.cfdi = cfdi;
     this.config_cfdi = config_cfdi;
     this.type_cp = type;
@@ -161,21 +174,6 @@ abstract class CartaPorte {
       Object.assign(json["cfdi:Comprobante"]["cfdi:Complemento"], node_carta_porte);
     }
     return json;
-  }
-  private simplifyJson(obj: any): any {
-    if (Array.isArray(obj)) {
-      return obj.map((item) => this.simplifyJson(item));
-    } else if (typeof obj === "object" && obj !== null) {
-      const simplified: any = {};
-      for (const key in obj) {
-        let newKey = key;
-        if (newKey.startsWith("@_")) newKey = newKey.slice(2);
-        if (newKey.includes(":")) newKey = newKey.split(":")[1];
-        simplified[newKey] = this.simplifyJson(obj[key]);
-      }
-      return simplified;
-    }
-    return obj;
   }
   private generateAttribute() {
     const att: any = {
@@ -307,6 +305,9 @@ abstract class CartaPorte {
     if (this.type_cp === "AV") {
       att["cartaporte31:TransporteAereo"] = this.generateNodeAereo();
     }
+    if (this.type_cp === "F") {
+      att["cartaporte31:TransporteFerroviario"] = this.generateNodeFerroviario();
+    }
     return att as IObjectNodeMercancias;
   }
   private generateNodeAutotransporte(): IObjectNodeAutotransporte {
@@ -378,6 +379,39 @@ abstract class CartaPorte {
     }
     return node as IObjectNodeAereo;
   }
+  private generateNodeFerroviario(): IObjectNodeFerroviario {
+    const node = {} as Partial<IObjectNodeFerroviario>;
+    for (const fk of ferroviario_keys) {
+      if (this.node_transporte_ferroviario[fk.entrada]) {
+        node[fk.salida] = this.node_transporte_ferroviario[fk.entrada] as any;
+      }
+    }
+    if (this.node_derechos_de_paso.length > 0) {
+      node["cartaporte31:DerechosDePaso"] = this.node_derechos_de_paso.map((dp) => ({
+        "@_KilometrajePagado": dp.kilometrajePagado,
+        "@_TipoDerechoDePaso": dp.tipoDerechoDePaso,
+      }));
+    }
+    if (this.node_carro.length > 0) {
+      node["cartaporte31:Carro"] = this.node_carro.map((c) => {
+        const node_carro: IObjectNodeCarro = {
+          "@_TipoCarro": c.carro.tipoCarro,
+          "@_MatriculaCarro": c.carro.matriculaCarro,
+          "@_GuiaCarro": c.carro.guiaCarro,
+          "@_ToneladasNetasCarro": c.carro.toneladasNetasCarro,
+        };
+        if ("contenedor" in c && c.contenedores!.length > 0) {
+          node_carro["cartaporte31:Contenedor"] = c.contenedores!.map((con) => ({
+            "@_PesoContenedorVacio": con.pesoContenedorVacio,
+            "@_PesoNetoMercancia": con.pesoNetoMercancia,
+            "@_TipoContenedor": con.tipoContenedor,
+          }));
+        }
+        return node_carro;
+      });
+    }
+    return node as IObjectNodeFerroviario;
+  }
   private generateNodeFiguraTranporte() {
     const node: { "cartaporte31:TiposFigura": IObjectNodeTF[] } = {
       "cartaporte31:TiposFigura": this.node_tipo_figura.map((tf) => {
@@ -426,6 +460,15 @@ abstract class CartaPorte {
   }
   protected setNodeTransporteAereo(data: INodeAereo) {
     this.node_transporte_aereo = data;
+  }
+  protected setNodeTransporteFerroviario(data: INodeFerroviario) {
+    this.node_transporte_ferroviario = data;
+  }
+  protected setNodeDerechoDePasoFerr(data: INodeDerechosDePaso) {
+    this.node_derechos_de_paso.push(data);
+  }
+  protected setNodeCarroFerroviario(data: INodeCarro) {
+    this.node_carro.push(data);
   }
 }
 export default CartaPorte;
