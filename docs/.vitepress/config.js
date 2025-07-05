@@ -1,5 +1,5 @@
 export default {
-  base: "/cfdi-sat-nodejs",
+  base: "/cfdi-sat-nodejs/",
   title: "cfdi-sat-nodejs",
   description: "Generador CFDI 4.0, Carta Porte 3.1 y más en Node.js",
   themeConfig: {
