@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "watch": "tsc --watch",
-    "build": "tsup src/index.ts --format esm,cjs --dts --outDir dist && copyfiles -u 1 \"src/resources/**/*\" dist"
+    "build": "tsup src/index.ts --format esm,cjs --dts --outDir dist && copyfiles -u 1 \"src/resources/**/*\" dist",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "exports": {
     ".": {
@@ -43,7 +46,8 @@
     "@types/uuid": "^10.0.0",
     "copyfiles": "^2.4.1",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitepress": "^1.6.3"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8",
