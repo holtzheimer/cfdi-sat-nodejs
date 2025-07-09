@@ -329,8 +329,10 @@ class FacturaCfdi extends Utils {
       Importe: parseFloat(concepto.importe).toFixed(2),
       ObjetoImp: concepto.objetoImp ?? "02",
       ValorUnitario: parseFloat(concepto.valorUnitario.toString()).toFixed(2),
-      Unidad: concepto.unidad,
     };
+    if ("unidad" in concepto) {
+      node_attr.Unidad = concepto.unidad;
+    }
     if ("noIdentificacion" in concepto) {
       node_attr.NoIdentificacion = concepto.noIdentificacion;
     }
