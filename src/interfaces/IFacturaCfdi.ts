@@ -94,7 +94,7 @@ export interface INodeConc {
   descripcion: string;
   valorUnitario: string | number;
   importe: string;
-  unidad: string;
+  unidad?: string;
   objetoImp?: "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08";
   noIdentificacion?: string;
   descuento?: string;
@@ -107,7 +107,7 @@ export interface IObjectNodeConcepto {
   ValorUnitario: string | number;
   Importe: string;
   ObjetoImp: "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08";
-  Unidad: string;
+  Unidad?: string;
   NoIdentificacion?: string;
   Descuento?: string;
 }
