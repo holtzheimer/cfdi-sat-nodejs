@@ -23,7 +23,7 @@ class Pago extends Utils {
     montoTotalPagos: 0,
   };
   private readonly pagos: INodePago[] = [];
-  private retenciones: IDocRelRetenciones[] = [];
+  private readonly retenciones: IDocRelRetenciones[] = [];
   private traslados: IDocRelTraslado[] = [];
   constructor(cfdi: string | Record<string, string>, config_cfdi: ConfigCfdi) {
     super();
