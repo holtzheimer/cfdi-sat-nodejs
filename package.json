@@ -1,6 +1,6 @@
 {
   "name": "cfdi-sat-nodejs",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -9,8 +9,7 @@
     "build": "tsup src/index.ts --format esm,cjs --dts --outDir dist && copyfiles -u 1 \"src/resources/**/*\" dist",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "docs:deploy": "gh-pages -d docs/.vitepress/dist"
+    "docs:preview": "vitepress preview docs"
   },
   "exports": {
     ".": {
@@ -46,7 +45,6 @@
     "@types/stream-json": "^1.7.8",
     "@types/uuid": "^10.0.0",
     "copyfiles": "^2.4.1",
-    "gh-pages": "^6.3.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitepress": "^1.6.3"

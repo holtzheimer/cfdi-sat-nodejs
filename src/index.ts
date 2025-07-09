@@ -6,5 +6,6 @@ import CartaPorteAutotransporte from "./classes/CartaPorteAutotransporte";
 import CartaPorteMaritimo from "./classes/CartaPorteMaritimo";
 import CartaPorteAereo from "./classes/CartaPorteAereo";
 import CartaPorteFerroviario from "./classes/CartaPorteFerroviario";
+import Pago from "./classes/Pago";
 
-export { ConfigCfdi, FacturaCfdi, CatalogoSat, Utils, CartaPorteAutotransporte, CartaPorteMaritimo, CartaPorteAereo, CartaPorteFerroviario };
+export { ConfigCfdi, FacturaCfdi, CatalogoSat, Utils, CartaPorteAutotransporte, CartaPorteMaritimo, CartaPorteAereo, CartaPorteFerroviario, Pago };
