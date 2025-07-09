@@ -23,6 +23,8 @@ class Pago extends Utils {
     montoTotalPagos: 0,
   };
   private readonly pagos: INodePago[] = [];
+  private retenciones: IDocRelRetenciones[] = [];
+  private traslados: IDocRelTraslado[] = [];
   constructor(cfdi: string | Record<string, string>, config_cfdi: ConfigCfdi) {
     super();
     if (typeof cfdi === "string") {
@@ -103,6 +105,37 @@ class Pago extends Utils {
     if ("doctoRelacionados" in data) {
       node["pago20:DoctoRelacionado"] = data.doctoRelacionados.map((dr) => this.generateDoctoRelacionado(dr));
     }
+    const retencionesValidas = this.retenciones.filter((r) => parseFloat(r.importeDr.toString()) > 0);
+    if (retencionesValidas.length > 0 || this.traslados.length > 0) {
+      node["pago20:ImpuestosP"] = {};
+
+      if (retencionesValidas.length > 0) {
+        node["pago20:ImpuestosP"]["pago20:RetencionesP"] = {
+          "pago20:RetencionP": retencionesValidas.map((r) => ({
+            "@_ImpuestoP": r.impuestoDr,
+            "@_ImporteP": parseFloat(r.importeDr.toString()).toFixed(2),
+          })),
+        };
+      }
+      if (this.traslados.length > 0) {
+        node["pago20:ImpuestosP"]["pago20:TrasladosP"] = {
+          "pago20:TrasladoP": this.traslados.map((t) => {
+            const att: any = {
+              "@_BaseP": parseFloat(t.baseDr.toString()).toFixed(2),
+              "@_ImpuestoP": t.impuestoDr,
+              "@_TipoFactorP": t.tipoFactorDr,
+            };
+            if ("tasaOCuotaDr" in t) {
+              att["@_TasaOCuotaP"] = parseFloat(t.tasaOCuotaDr!.toString()).toFixed(6);
+            }
+            if ("importeDr" in t) {
+              att["@_ImporteP"] = parseFloat(t.importeDr!.toString()).toFixed(2);
+            }
+            return att;
+          }),
+        };
+      }
+    }
     return node as IObjectNodePago;
   }
   private generateDoctoRelacionado(data: IDocRelacionado): IObjectNodeDocRela {
@@ -123,17 +156,19 @@ class Pago extends Utils {
   private generateNodeImpuestos(data: { retenciones?: IDocRelRetenciones[]; traslados?: IDocRelTraslado[] }) {
     const node = {} as Partial<IObjectNodeImp>;
     if ("retenciones" in data && data.retenciones!.length > 0) {
+      this.retenciones = data.retenciones!;
       node["pago20:RetencionesDR"] = {
         "pago20:RetencionDR": data.retenciones!.map((r) => ({
-          "@_BaseDR": r.baseDr,
+          "@_BaseDR": parseFloat(r.baseDr.toString()).toFixed(2),
           "@_ImpuestoDR": r.impuestoDr,
           "@_TipoFactorDR": r.tipoFactorDr,
-          "@_TasaOCuotaDR": r.tasaOCuotaDr,
-          "@_ImporteDR": r.importeDr,
+          "@_TasaOCuotaDR": parseFloat(r.tasaOCuotaDr.toString()).toFixed(6),
+          "@_ImporteDR": parseFloat(r.importeDr.toString()).toFixed(2),
         })),
       };
     }
     if ("traslados" in data && data.traslados!.length > 0) {
+      this.traslados = data.traslados!;
       node["pago20:TrasladosDR"] = {
         "pago20:TrasladoDR": data.traslados!.map((t) => {
           const n_traslado: IObjectDocRelTraslado = {
@@ -142,7 +177,7 @@ class Pago extends Utils {
             "@_TipoFactorDR": t.tipoFactorDr,
           };
           if ("tasaOCuotaDr" in t) {
-            n_traslado["@_TasaOCuotaDR"] = t.tasaOCuotaDr;
+            n_traslado["@_TasaOCuotaDR"] = parseFloat(t.tasaOCuotaDr!.toString()).toFixed(6);
           }
           if ("importeDr" in t) {
             n_traslado["@_ImporteDR"] = parseFloat(t.importeDr!.toString()).toFixed(2);

@@ -9,7 +9,7 @@ Consulte la documentación completa en: [https://luisjossam.github.io/cfdi-sat-n
 Puede instalar mediante NPM
 
 ```bash
-npm install --save cfdi-sat-nodejs
+npm install cfdi-sat-nodejs --save
 ```
 
 ## **Importación**

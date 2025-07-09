@@ -259,9 +259,9 @@ class FacturaCfdi extends Utils {
       Serie: this.node_comprobante.serie,
       Folio: this.node_comprobante.folio,
       Fecha: this.node_comprobante.fecha,
-      SubTotal: parseFloat(this.node_comprobante.subtotal.toString()).toFixed(2),
+      SubTotal: this.node_comprobante.tipoDeComprobante === "P" ? "0" : parseFloat(this.node_comprobante.subtotal.toString()).toFixed(2),
       Moneda: this.node_comprobante.moneda ?? "MXN",
-      Total: parseFloat(this.node_comprobante.total.toString()).toFixed(2),
+      Total: this.node_comprobante.tipoDeComprobante === "P" ? "0" : parseFloat(this.node_comprobante.total.toString()).toFixed(2),
       TipoDeComprobante: this.node_comprobante.tipoDeComprobante ?? "I",
       LugarExpedicion: this.node_comprobante.lugarExpedicion,
       NoCertificado: this.config_cfdi.getCert().noCertificado,
@@ -272,19 +272,23 @@ class FacturaCfdi extends Utils {
         .replace(/(\r\n|\n|\r)/gm, ""),
       Exportacion: this.node_comprobante.exportacion ?? "01",
     };
-    if ("formaPago" in this.node_comprobante && this.node_comprobante.tipoDeComprobante !== "T") {
+    if ("formaPago" in this.node_comprobante && !["T", "P"].includes(this.node_comprobante.tipoDeComprobante!)) {
       node_comprobante.FormaPago = this.node_comprobante.formaPago;
     }
-    if ("metodoPago" in this.node_comprobante && this.node_comprobante.tipoDeComprobante !== "T") {
+    if ("metodoPago" in this.node_comprobante && !["T", "P"].includes(this.node_comprobante.tipoDeComprobante!)) {
       node_comprobante.MetodoPago = this.node_comprobante.metodoPago;
     }
     if ("tipoCambio" in this.node_comprobante && node_comprobante.Moneda !== "MXN") {
       node_comprobante.TipoCambio = this.node_comprobante.tipoCambio;
     }
-    if ("condicionesDePago" in this.node_comprobante) {
+    if ("condicionesDePago" in this.node_comprobante && !["P"].includes(this.node_comprobante.tipoDeComprobante!)) {
       node_comprobante.CondicionesDePago = this.node_comprobante.condicionesDePago;
     }
-    if ("descuento" in this.node_comprobante && parseFloat(this.node_comprobante.descuento!.toString()) > 0) {
+    if (
+      "descuento" in this.node_comprobante &&
+      parseFloat(this.node_comprobante.descuento!.toString()) > 0 &&
+      !["P"].includes(this.node_comprobante.tipoDeComprobante!)
+    ) {
       node_comprobante.Descuento = this.node_comprobante.descuento;
     }
     return node_comprobante;

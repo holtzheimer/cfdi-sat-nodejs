@@ -32,7 +32,6 @@ export interface IObjectNodeTotales {
 export interface INodePago {
   pago: IPago;
   doctoRelacionados: IDocRelacionado[];
-  impuestos?: { retenciones?: IPRetenciones[]; traslados?: IPTraslado[] };
 }
 export interface IPago {
   fechaPago: string;
@@ -68,6 +67,11 @@ export interface IObjectNodePago {
   "@_CadPago"?: string;
   "@_SelloPago"?: string;
   "pago20:DoctoRelacionado": IObjectNodeDocRela[];
+  "pago20:ImpuestosP": IObjectNodePImp;
+}
+export interface IObjectNodePImp {
+  "pago20:RetencionesP"?: { "pago20:RetencionP": IObjectPRetenciones[] };
+  "pago20:TrasladosP"?: { "pago20:TrasladoP": IObjectPTraslado[] };
 }
 export interface IDocRelacionado {
   doctoRelacionado: IDocRela;
@@ -128,10 +132,21 @@ export interface IPRetenciones {
   impuestoP: string;
   importeP: string;
 }
+export interface IObjectPRetenciones {
+  "@_ImpuestoP": string;
+  "@_ImporteP": string;
+}
 export interface IPTraslado {
   baseP: string;
   impuestoP: string;
   tipoFactorP: string;
   tasaOCuotaP?: string | number;
   importeP?: string;
+}
+export interface IObjectPTraslado {
+  "@_BaseP": string;
+  "@_ImpuestoP": string;
+  "@_TipoFactorP": string;
+  "@_TasaOCuotaP"?: string | number;
+  "@_ImporteP"?: string;
 }

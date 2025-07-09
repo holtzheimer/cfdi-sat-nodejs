@@ -7,7 +7,7 @@ export interface INodeComprobante {
   total: string | number;
   metodoPago?: "PUE" | "PPD";
   lugarExpedicion: string | number;
-  tipoDeComprobante?: "I" | "E" | "T";
+  tipoDeComprobante?: "I" | "E" | "T" | "P";
   moneda?: string;
   exportacion?: string;
   condicionesDePago?: string;
@@ -27,7 +27,7 @@ export interface IObjectNodeComprobante {
   FormaPago?: string | number;
   Total: string | number;
   MetodoPago?: "PUE" | "PPD";
-  TipoDeComprobante: "I" | "E" | "T";
+  TipoDeComprobante: "I" | "E" | "T" | "P";
   LugarExpedicion: string | number;
   NoCertificado: string;
   Certificado: string;
