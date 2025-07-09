@@ -38,7 +38,7 @@ export interface IPago {
   formaDePagoP: string;
   monedaP: string;
   monto: string | number;
-  tipoDeCambioP?: string | number;
+  tipoCambioP?: string | number;
   numOperacion?: string;
   rfcEmisorCtaOrd?: string;
   nomBancoOrdExt?: string;
@@ -55,7 +55,7 @@ export interface IObjectNodePago {
   "@_FormaDePagoP": string;
   "@_MonedaP": string;
   "@_Monto": string | number;
-  "@_TipoDeCambioP"?: string | number;
+  "@_TipoCambioP"?: string | number;
   "@_NumOperacion"?: string;
   "@_RFCEmisorCtaOrd"?: string;
   "@_NomBancoOrdExt"?: string;

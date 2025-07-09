@@ -89,8 +89,8 @@ class Pago extends Utils {
   private generateNodeTotales(): IObjectNodeTotales {
     const node = {} as Partial<IObjectNodeTotales>;
     for (const tk of totales_keys) {
-      if (this.totales[tk.entrada]) {
-        node[tk.salida] = tk.entrada === "montoTotalPagos" ? parseFloat(this.totales[tk.entrada].toString()).toFixed(2) : (this.totales[tk.entrada] as any);
+      if (this.totales[tk.entrada] != null) {
+        node[tk.salida] = parseFloat(this.totales[tk.entrada]!.toString()).toFixed(2) as any;
       }
     }
     return node as IObjectNodeTotales;
@@ -105,13 +105,12 @@ class Pago extends Utils {
     if ("doctoRelacionados" in data) {
       node["pago20:DoctoRelacionado"] = data.doctoRelacionados.map((dr) => this.generateDoctoRelacionado(dr));
     }
-    const retencionesValidas = this.retenciones.filter((r) => parseFloat(r.importeDr.toString()) > 0);
-    if (retencionesValidas.length > 0 || this.traslados.length > 0) {
+    if (this.retenciones.length > 0 || this.traslados.length > 0) {
       node["pago20:ImpuestosP"] = {};
 
-      if (retencionesValidas.length > 0) {
+      if (this.retenciones.length > 0) {
         node["pago20:ImpuestosP"]["pago20:RetencionesP"] = {
-          "pago20:RetencionP": retencionesValidas.map((r) => ({
+          "pago20:RetencionP": this.retenciones.map((r) => ({
             "@_ImpuestoP": r.impuestoDr,
             "@_ImporteP": parseFloat(r.importeDr.toString()).toFixed(2),
           })),
@@ -156,15 +155,23 @@ class Pago extends Utils {
   private generateNodeImpuestos(data: { retenciones?: IDocRelRetenciones[]; traslados?: IDocRelTraslado[] }) {
     const node = {} as Partial<IObjectNodeImp>;
     if ("retenciones" in data && data.retenciones!.length > 0) {
-      this.retenciones = data.retenciones!;
       node["pago20:RetencionesDR"] = {
-        "pago20:RetencionDR": data.retenciones!.map((r) => ({
-          "@_BaseDR": parseFloat(r.baseDr.toString()).toFixed(2),
-          "@_ImpuestoDR": r.impuestoDr,
-          "@_TipoFactorDR": r.tipoFactorDr,
-          "@_TasaOCuotaDR": parseFloat(r.tasaOCuotaDr.toString()).toFixed(6),
-          "@_ImporteDR": parseFloat(r.importeDr.toString()).toFixed(2),
-        })),
+        "pago20:RetencionDR": data.retenciones!.map((r) => {
+          const retencion_index = this.retenciones.findIndex((aR) => aR.impuestoDr === r.impuestoDr);
+          if (retencion_index > -1) {
+            this.retenciones[retencion_index].importeDr =
+              parseFloat(this.retenciones[retencion_index].importeDr.toString()) + parseFloat(r.importeDr.toString());
+          } else {
+            this.retenciones.push(r);
+          }
+          return {
+            "@_BaseDR": parseFloat(r.baseDr.toString()).toFixed(2),
+            "@_ImpuestoDR": r.impuestoDr,
+            "@_TipoFactorDR": r.tipoFactorDr,
+            "@_TasaOCuotaDR": parseFloat(r.tasaOCuotaDr.toString()).toFixed(6),
+            "@_ImporteDR": parseFloat(r.importeDr.toString()).toFixed(2),
+          };
+        }),
       };
     }
     if ("traslados" in data && data.traslados!.length > 0) {

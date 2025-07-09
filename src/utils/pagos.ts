@@ -18,7 +18,7 @@ export const pagos_keys: { entrada: keyof IPago; salida: keyof IObjectNodePago }
   { entrada: "formaDePagoP", salida: "@_FormaDePagoP" },
   { entrada: "monedaP", salida: "@_MonedaP" },
   { entrada: "monto", salida: "@_Monto" },
-  { entrada: "tipoDeCambioP", salida: "@_TipoDeCambioP" },
+  { entrada: "tipoCambioP", salida: "@_TipoCambioP" },
   { entrada: "numOperacion", salida: "@_NumOperacion" },
   { entrada: "rfcEmisorCtaOrd", salida: "@_RFCEmisorCtaOrd" },
   { entrada: "nomBancoOrdExt", salida: "@_NomBancoOrdExt" },
