@@ -1,18 +1,16 @@
-# Clase CartaPorteAereo
+# Clase CartaPorteFerroviario
 
-Clase utilizada para generar el complemento Carta Porte cuando el medio de transporte es aéreo. Esta clase encapsula la lógica necesaria para construir nodos específicos requeridos por el SAT en traslados por vía aérea.
-
-Esta implementación cumple con los lineamientos del complemento Carta Porte versión 3.1.
+Clase utilizada para generar el complemento Carta Porte cuando el medio de transporte es **ferroviario**. Esta clase se encarga de construir todos los nodos específicos requeridos por el SAT en traslados por ferrocarril conforme a la versión 3.1 del complemento cartaporte.
 
 ## Inicialización
 
 ```ts{6}
-import { CartaPorteAereo, ConfigCfdi } from "cfdi-sat-nodejs";
+import { CartaPorteFerroviario, ConfigCfdi } from "cfdi-sat-nodejs";
 
 const configCfdi = new ConfigCfdi({...});
 const cfdi = `<?xml version="1.0"?><cfdi:Comprobante...`
 
-const cartaporte = new CartaPorteAereo(cfdi, configCfdi);
+const cartaporte = new CartaPorteFerroviario(cfdi, configCfdi);
 ```
 
 - **cfdi**: Contenido del xml u objeto json donde se integrará el complemento.
@@ -29,6 +27,8 @@ Esta estructura es necesaria para que `cfdi-sat-nodejs` pueda validar, sellar o 
 
 ## Métodos disponibles
 
-Una vez instanciado, `CartaPorteAereo` permite utilizar métodos como:
+Una vez instanciado, `CartaPorteFerroviario` permite utilizar métodos como:
 
-- [createNodeAereo](/docs/v3.0/carta-porte-aereo/createNodeAereo)
+- [createNodeFerroviario](./createNodeFerroviario.md)
+- [createNodeDerechoDePaso](./createNodeDerechoDePaso.md)
+- [createNodeCarro](./createNodeCarro.md)

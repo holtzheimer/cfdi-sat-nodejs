@@ -41,6 +41,6 @@ Esto aplica a transportes con vehículos de carga como:
 
 Una vez instanciado, `CartaPorteAutotransporte` permite utilizar métodos como:
 
-- [createNodeAutotransporte](/docs/v3.0/carta-porte-autotransporte/createNodeAutotransporte)
-- [createNodeIdentificacionVehicular](/docs/v3.0/carta-porte-autotransporte/createNodeIdentificacionVehicular)
-- [createNodeRemolques](/docs/v3.0/carta-porte-autotransporte/createNodeRemolques)
+- [createNodeAutotransporte](./createNodeAutotransporte.md)
+- [createNodeIdentificacionVehicular](./createNodeIdentificacionVehicular.md)
+- [createNodeRemolques](./createNodeRemolques.md)

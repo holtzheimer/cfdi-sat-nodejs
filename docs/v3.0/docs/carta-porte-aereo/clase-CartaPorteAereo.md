@@ -1,18 +1,18 @@
-# Clase CartaPorteMaritimo
+# Clase CartaPorteAereo
 
-Clase utilizada para la generación de la Carta Porte con medio de transporte marítimo, cumpliendo con los lineamientos del SAT en la versión 3.1 del complemento cartaporte.
+Clase utilizada para generar el complemento Carta Porte cuando el medio de transporte es aéreo. Esta clase encapsula la lógica necesaria para construir nodos específicos requeridos por el SAT en traslados por vía aérea.
 
-Esta clase encapsula toda la lógica necesaria para generar nodos y atributos relacionados con el transporte por vía marítima.
+Esta implementación cumple con los lineamientos del complemento Carta Porte versión 3.1.
 
 ## Inicialización
 
 ```ts{6}
-import { CartaPorteMaritimo, ConfigCfdi } from "cfdi-sat-nodejs";
+import { CartaPorteAereo, ConfigCfdi } from "cfdi-sat-nodejs";
 
 const configCfdi = new ConfigCfdi({...});
 const cfdi = `<?xml version="1.0"?><cfdi:Comprobante...`
 
-const cartaporte = new CartaPorteMaritimo(cfdi, configCfdi);
+const cartaporte = new CartaPorteAereo(cfdi, configCfdi);
 ```
 
 - **cfdi**: Contenido del xml u objeto json donde se integrará el complemento.
@@ -29,7 +29,6 @@ Esta estructura es necesaria para que `cfdi-sat-nodejs` pueda validar, sellar o 
 
 ## Métodos disponibles
 
-Una vez instanciado, `CartaPorteMaritimo` permite utilizar métodos como:
+Una vez instanciado, `CartaPorteAereo` permite utilizar métodos como:
 
-- [createNodeMaritimo](/docs/v3.0/carta-porte-maritimo/createNodeMaritimo)
-- [createNodeContenedor](/docs/v3.0/carta-porte-maritimo/createNodeContenedor)
+- [createNodeAereo](./createNodeAereo.md)

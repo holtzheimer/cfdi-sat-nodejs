@@ -29,6 +29,6 @@ Esta estructura es necesaria para que `cfdi-sat-nodejs` pueda validar, sellar o 
 
 Una vez instanciado, `CartaPorteFerroviario` permite utilizar métodos como:
 
-- [createNodeFerroviario](/docs/v3.0/carta-porte-ferroviario/createNodeFerroviario)
-- [createNodeDerechoDePaso](/docs/v3.0/carta-porte-ferroviario/createNodeDerechoDePaso)
-- [createNodeCarro](/docs/v3.0/carta-porte-ferroviario/createNodeCarro)
+- [createNodeFerroviario](./createNodeFerroviario.md)
+- [createNodeDerechoDePaso](./createNodeDerechoDePaso.md)
+- [createNodeCarro](./createNodeCarro.md)

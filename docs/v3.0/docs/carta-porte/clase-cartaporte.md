@@ -10,7 +10,7 @@ En las siguientes secciones se documentan los métodos comunes que aplican a tod
 
 Puede ir rapidamente a cualquier tipo de medio de transporte dando click en los siguientes enlaces:
 
-- [CartaPorte para Autotransportes](/docs/v3.0/carta-porte-autotransporte/clase-CartaPorteAutotransporte)
-- [CartaPorte para transportes marítimos](/docs/v3.0/carta-porte-autotransporte/clase-CartaPorteAutotransporte)
-- [CartaPorte para transportes aéreos](/docs/v3.0/carta-porte-autotransporte/clase-CartaPorteAutotransporte)
-- [CartaPorte para transportes ferroviarios](/docs/v3.0/carta-porte-autotransporte/clase-CartaPorteAutotransporte)
+- [CartaPorte para Autotransportes](../carta-porte-autotransporte/clase-CartaPorteAutotransporte.md)
+- [CartaPorte para transportes marítimos](../carta-porte-maritimo/clase-CartaPorteMaritimo.md)
+- [CartaPorte para transportes aéreos](../carta-porte-aereo/clase-CartaPorteAereo.md)
+- [CartaPorte para transportes ferroviarios](../carta-porte-ferroviario/clase-CartaPorteFerroviario.md)
