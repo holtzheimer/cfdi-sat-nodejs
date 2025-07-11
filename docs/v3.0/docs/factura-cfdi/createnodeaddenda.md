@@ -42,6 +42,7 @@ Cada objeto dentro del arreglo **nodes[]** representa un nodo hijo del nodo prin
 No se permite usar `content` y `nodes` simultáneamente en un mismo nodo. Si se incluyen ambos —ya sea por error o descuido— el paquete ignorará ambos campos para evitar ambigüedades en la estructura XML.
 :::
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#addenda">`Lista de errores:Addenda`</a> para tener la lista de errores que se puede generar.
+ -->

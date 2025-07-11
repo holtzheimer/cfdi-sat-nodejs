@@ -46,6 +46,7 @@ Si el receptor es extranjero, deben usarse residenciaFiscal y numRegIdTrib, y el
 
 :::
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#receptor">`Lista de errores:Receptor`</a> para tener la lista de errores que se puede generar.
+ -->

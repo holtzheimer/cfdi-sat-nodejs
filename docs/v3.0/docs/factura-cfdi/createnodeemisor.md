@@ -35,6 +35,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 Este nodo debe definirse siempre, ya que representa al contribuyente emisor del comprobante.
 :::
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#emisor">`Lista de errores:Emisor`</a> para tener la lista de errores que se puede generar.
+ -->

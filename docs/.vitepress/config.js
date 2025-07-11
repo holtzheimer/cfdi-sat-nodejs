@@ -110,10 +110,6 @@ export default {
           ],
         },
         {
-          text: "Validador",
-          items: [{ text: "Lista de errores", link: "/v3.1/docs/validador/lista-de-errores" }],
-        },
-        {
           text: "Changelog",
           link: "/v3.1/docs/changelog",
         },
@@ -196,10 +192,6 @@ export default {
             { text: "createNodeDerechoDePaso", link: "/v3.0/docs/carta-porte-ferroviario/createNodeDerechoDePaso" },
             { text: "createNodeCarro", link: "/v3.0/docs/carta-porte-ferroviario/createNodeCarro" },
           ],
-        },
-        {
-          text: "Validador",
-          items: [{ text: "Lista de errores", link: "/v3.0/docs/validador/lista-de-errores" }],
         },
       ],
     },

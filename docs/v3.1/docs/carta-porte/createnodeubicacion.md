@@ -109,6 +109,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | numeroInterior | string - number | (opcional) Número interior de la ubicación.                   |
 | referencia     | string          | (opcional) Información adicional para localizar la ubicación. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#ubicacion">`Lista de errores:Ubicacion`</a> para tener la lista de errores que se puede generar.
+ -->

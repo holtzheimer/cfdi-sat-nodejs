@@ -60,6 +60,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | manga                  | string - number    | Manga de la embarcación.                                                                       |
 | puntal                 | string - number    | Puntal de la embarcación.                                                                      |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#maritimo">`Lista de errores:Maritimo`</a> para tener la lista de errores que se puede generar.
+ -->

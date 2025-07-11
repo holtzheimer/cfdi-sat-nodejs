@@ -29,6 +29,6 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | cargoPorTasacion                      | string              | (opcional) Monto correspondiente a cargos por tasación.               |
 | logisticaInversaRecoleccionDevolucion | `Sí` - `No`         | (opcional) Indica si hay logística inversa, recolección o devolución. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
-Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#mercancias">`Lista de errores:Mercancias`</a> para tener la lista de errores que se puede generar.
+Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#mercancias">`Lista de errores:Mercancias`</a> para tener la lista de errores que se puede generar. -->

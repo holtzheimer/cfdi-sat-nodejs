@@ -20,6 +20,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 
 Cada clave del arreglo generará un subnodo `cartaporte31:RegimenAduanero` dentro del nodo padre `cartaporte31:RegimenesAduaneros`.
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#regimenes-aduaneros">`Lista de errores:RegimenesAduaneros`</a> para tener la lista de errores que se puede generar.
+ -->

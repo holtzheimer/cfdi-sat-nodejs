@@ -69,6 +69,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | placaCcp      | string         | Placa del remolque o unidad de arrastre. |
 | subTipoRemCcp | `c_SubTipoRem` | Clave del subtipo de remolque.           |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/v3.0/docs/validador/lista-de-errores#contenedor">`Lista de errores:Contenedor`</a> para tener la lista de errores que se puede generar.
+ -->

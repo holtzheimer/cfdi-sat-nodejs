@@ -259,6 +259,6 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | unidadPesoMerc | `c_ClaveUnidadPeso` | Unidad de medida del peso.                                 |
 | numPiezas      | string - number     | (opcional) Número total de piezas físicas de la mercancía. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
-Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#mercancia">`Lista de errores:Mercancia`</a> para tener la lista de errores que se puede generar.
+Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#mercancia">`Lista de errores:Mercancia`</a> para tener la lista de errores que se puede generar. -->

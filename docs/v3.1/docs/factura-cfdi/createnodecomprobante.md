@@ -54,6 +54,7 @@ Asegúrate de incluir los campos requeridos por el SAT para el tipo de comproban
 
 :::
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#comprobante">`Lista de errores:Comprobante`</a> para tener la lista de errores que se puede generar.
+ -->

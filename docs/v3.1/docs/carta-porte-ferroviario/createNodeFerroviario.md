@@ -26,6 +26,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | nombreAseg      | string             | (opcional) Nombre de la aseguradora del transporte ferroviario. |
 | numPolizaSeguro | string             | (opcional) Número de póliza de seguro correspondiente.          |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#transporte-ferroviario">`Lista de errores:TransporteFerroviario`</a> para tener la lista de errores que se puede generar.
+ -->

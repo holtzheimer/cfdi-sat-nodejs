@@ -22,6 +22,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | permSct       | `c_TipoPermiso` | Clave del tipo de permiso proporcionado por la SICT correspondiente al autotransporte a usar. |
 | numPermisoSct | string          | Número del permiso otorgado por la SICT del autotransporte.                                   |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#autotransporte">`Lista de errores:Autotransporte`</a> para tener la lista de errores que se puede generar.
+ -->

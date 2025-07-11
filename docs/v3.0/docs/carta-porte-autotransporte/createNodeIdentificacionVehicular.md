@@ -26,6 +26,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | configVehicular    | `c_ConfigAutotransporte` | Clave que indica la configuración vehicular según el catálogo del SAT. |
 | pesoBrutoVehicular | string - number          | Peso bruto del vehículo en toneladas o kilogramos.                     |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#identificacion-vehicular">`Lista de errores:IdentificacionVehicular`</a> para tener la lista de errores que se puede generar.
+ -->

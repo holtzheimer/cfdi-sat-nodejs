@@ -20,6 +20,6 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | kilometrajePagado | string - number    | Distancia cubierta bajo el derecho de paso ferroviario. |
 | tipoDerechoDePaso | `c_DerechosDePaso` | Clave que indica el tipo de derecho de paso utilizado.  |
 
-## Lista de errores
+<!-- ## Lista de errores
 
-Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#derecho-de-paso">`Lista de errores:DerechoDePaso`</a> para tener la lista de errores que se puede generar.
+Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#derecho-de-paso">`Lista de errores:DerechoDePaso`</a> para tener la lista de errores que se puede generar. -->

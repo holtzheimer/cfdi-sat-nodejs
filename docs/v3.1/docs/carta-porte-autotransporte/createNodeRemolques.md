@@ -32,6 +32,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | placa      | string         | Placa del remolque o semirremolque.                       |
 | subTipoRem | `c_SubTipoRem` | Clave del subtipo de remolque, según el catálogo del SAT. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#remolques">`Lista de errores:Remolques`</a> para tener la lista de errores que se puede generar.
+ -->

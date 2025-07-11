@@ -395,6 +395,6 @@ factura.createNodeConcepto({
 | --------------- | ------ | -------------------------------------------------------------------- |
 | numeroPedimento | string | Número de pedimento aduanal válido conforme a la estructura del SAT. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
-Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#concepto">`Lista de errores:Concepto`</a> para tener la lista de errores que se puede generar.
+Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#concepto">`Lista de errores:Concepto`</a> para tener la lista de errores que se puede generar. -->

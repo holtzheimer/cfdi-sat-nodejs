@@ -35,6 +35,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | totalDistRec         | string - number      | Requerido si entradaSalidaMerc es "Salida". Distancia total recorrida en kilómetros. |
 | viaEntradaSalida     | `c_CveTransporte`    | Clave de del medio de tranporte de entrada o salida.                                 |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#carta-porte">`Lista de errores:CartaPorte`</a> para tener la lista de errores que se puede generar.
+ -->

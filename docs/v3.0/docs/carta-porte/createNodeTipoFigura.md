@@ -118,6 +118,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | --------------- | ------------------- | ---------------------------------------------------------------------------------------- |
 | parteTransporte | `c_ParteTransporte` | Clave que representa una parte específica del transporte en la que interviene la figura. |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#tipo-figura">`Lista de errores:TipoFigura`</a> para tener la lista de errores que se puede generar.
+ -->

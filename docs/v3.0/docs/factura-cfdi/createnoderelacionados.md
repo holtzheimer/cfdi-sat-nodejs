@@ -38,6 +38,6 @@ Es posible relacionar múltiples CFDI en una sola llamada, pasando un arreglo co
 Si no necesitas relacionar este CFDI con alguno previo, puedes omitir este método.
 :::
 
-## Lista de errores
+<!-- ## Lista de errores
 
-Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#cfdi-relacionados">`Lista de errores:CfdiRelacionados`</a> para tener la lista de errores que se puede generar.
+Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#cfdi-relacionados">`Lista de errores:CfdiRelacionados`</a> para tener la lista de errores que se puede generar. -->

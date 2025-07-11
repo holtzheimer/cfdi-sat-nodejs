@@ -40,6 +40,7 @@ A continuación se muestra una tabla con las propiedades que acepta este método
 | numRegIdTribEmbarc     | string                    | (opcional) Número de registro fiscal en el extranjero del embarcador. |
 | residenciaFiscalEmbarc | string                    | (opcional) Clave del país de residencia fiscal del embarcador.        |
 
-## Lista de errores
+<!-- ## Lista de errores
 
 Vaya a la seccion <a href="/docs/v3.0/validador/lista-de-errores#transporte-aereo">`Lista de errores:TransporteAereo`</a> para tener la lista de errores que se puede generar.
+ -->
