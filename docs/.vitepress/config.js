@@ -1,3 +1,5 @@
+import { text } from "stream/consumers";
+
 export default {
   base: "/cfdi-sat-nodejs/",
   title: "cfdi-sat-nodejs",
@@ -16,6 +18,10 @@ export default {
           { text: "v3.1.x", link: "/v3.1/docs/" },
           { text: "v3.0.x", link: "/v3.0/docs/" },
         ],
+      },
+      {
+        text: "Changelog",
+        link: "/changelog",
       },
       { text: "GitHub", link: "https://github.com/Luisjossam/cfdi-sat-nodejs" },
     ],
@@ -110,8 +116,37 @@ export default {
           ],
         },
         {
-          text: "Changelog",
-          link: "/v3.1/docs/changelog",
+          text: "Utils",
+          items: [
+            {
+              text: "Clase Utils",
+              link: "/v3.1/docs/utils/Clase-Utils",
+            },
+            {
+              text: "dateCurrent",
+              link: "/v3.1/docs/utils/dateCurrent",
+            },
+            {
+              text: "generateIdCcp",
+              link: "/v3.1/docs/utils/generateIdCcp",
+            },
+            {
+              text: "generateUuid",
+              link: "/v3.1/docs/utils/generateUuid",
+            },
+            {
+              text: "jsonToXml",
+              link: "/v3.1/docs/utils/jsonToXml",
+            },
+            {
+              text: "sanitizeText",
+              link: "/v3.1/docs/utils/sanitizeText",
+            },
+            {
+              text: "xmlToJson",
+              link: "/v3.1/docs/utils/xmlToJson",
+            },
+          ],
         },
       ],
       "/v3.0/": [

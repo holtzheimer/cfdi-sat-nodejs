@@ -262,7 +262,6 @@ cfdi.createJson()
         <p style="color: var(--vp-c-text-light); font-size: 1rem; margin-bottom: 1rem;">
             Al seleccionar el tipo <code>I</code>, el sistema ajusta automáticamente la estructura y campos permitidos para este tipo de comprobante. Incluye soporte completo y exportación directa a XML o JSON.
         </p>
-        <button class="btn__link__class">Conozca más</button>
     </div>
 </div>
 </section>
@@ -274,7 +273,6 @@ cfdi.createJson()
         <p style="color: var(--vp-c-text-soft, #bbbbbb); font-size: 1rem; margin-bottom: 1rem;;text-align:right;">
             El tipo de comprobante que se utiliza para registrar devoluciones, descuentos o ajustes en operaciones previas. Nuestra librería gestiona automáticamente las particularidades de este tipo para garantizar la validez y correcto formato.
         </p>
-        <div style="display:flex;justify-content:end;"><button class="btn__link__class">Conozca más</button></div>
     </div>
     <div>
        <div style="background-color: #1e1e1e; border-radius: 12px; padding: 0.75rem 1rem 1rem 1rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; position: relative;">
@@ -328,10 +326,41 @@ cfdi.createJson()
         <p style="color: var(--vp-c-text-soft, #bbbbbb); font-size: 1rem; margin-bottom: 1rem;">
             Diseñado para documentar el movimiento de mercancías entre distintas localidades, el comprobante de traslado se genera con toda la información necesaria para reflejar fielmente el movimiento físico de mercancías, asegurando integridad y trazabilidad.
         </p>
-        <button class="btn__link__class">Conozca más</button>
     </div>
 </div>
 </section>
+<section  style="padding:0 100px;margin-top:4rem;">
+<div class="card__class">
+    <div>
+        <span style="font-size:28px;font-weight:600;color:#459add;text-align:right;display:block;">Pago</span>
+        <p style="color: var(--vp-c-text-soft, #bbbbbb); font-size: 1rem; margin-bottom: 1rem;;text-align:right;">
+            El CFDI tipo Pago es el comprobante oficial que registra los pagos realizados a facturas previas, facilitando el control fiscal y la conciliación contable. Ideal para empresas que manejan pagos en parcialidades o diferidos,
+        </p>
+    </div>
+    <div>
+       <div style="background-color: #1e1e1e; border-radius: 12px; padding: 0.75rem 1rem 1rem 1rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; position: relative;">
+    <!-- Semáforo MacOS -->
+    <div style="display: flex; gap: 0.5rem; position: absolute; top: 0.6rem; left: 0.75rem;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: #ff5f56;"></span>
+        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: #ffbd2e;"></span>
+        <span style="width: 12px; height: 12px; border-radius: 50%; background-color: #27c93f;"></span>
+    </div>
+        <div style="padding-top: 1.8rem;">
+            <span style="color:#666">&lt;cfdi:Comprobante</span><br>
+                &nbsp;&nbsp;<span style="color:#666">Version</span>=<span style="color:#888">"4.0"</span><br>
+                &nbsp;&nbsp;<span style="background-color:#2d2d2d; border-radius:4px; padding:2px 4px; color:#459add; font-weight:bold; box-shadow: 0 0 4px #4ec9b050;">
+                TipoDeComprobante="P"
+                </span><br>
+                &nbsp;&nbsp;<span style="color:#666">Serie</span>=<span style="color:#888">"CP"</span><br>
+                &nbsp;&nbsp;<span style="color:#666">Folio</span>=<span style="color:#888">"1"</span><br>
+                &nbsp;&nbsp;<span style="color:#555">...</span><br>
+                <span style="color:#666">&gt;</span>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
 <section style="background-color: #1e1e1e; color: #cccccc; padding: 2rem; border-radius: 8px; margin: 3rem 0;">
     <div style="display:flex;justify-content:center">
         <div style="

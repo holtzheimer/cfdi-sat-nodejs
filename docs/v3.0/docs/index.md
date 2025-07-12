@@ -1,3 +1,8 @@
+::: info 📘 Nota
+Estás consultando la documentación correspondiente a la versión 3 de **cfdi-sat-nodejs**.
+La versión actual disponible es la [3.1](/v3.1/docs/).
+:::
+
 # Bienvenido a cfdi-sat-nodejs
 
 **cfdi-sat-nodejs** es una biblioteca en Node.js para facilitar la creación, validación y manejo de comprobantes fiscales digitales por Internet (CFDI) conforme a los estándares del SAT.
