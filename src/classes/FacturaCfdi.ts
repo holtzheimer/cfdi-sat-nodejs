@@ -25,6 +25,8 @@ import { create } from "xmlbuilder2";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 import generateCadenaOriginal from "../utils/generateCadenaOriginal";
 import Utils from "./Utils";
+import Validator from "./Validator";
+import ValidatorFacturaCfdi from "./ValidatorFacturaCfdi";
 
 class FacturaCfdi extends Utils {
   private readonly config_cfdi: ConfigCfdi;
@@ -67,6 +69,11 @@ class FacturaCfdi extends Utils {
     this.config_cfdi = config_cfdi;
   }
   public createNodeComprobante(options: INodeComprobante) {
+    const errors = new ValidatorFacturaCfdi<INodeComprobante>("comprobante", options).getErrors();
+    if (errors.length > 0) {
+      const err = `Exist an error at node Comprobante: ${errors[0].code}: ${errors[0].message}`;
+      throw new Error(err);
+    }
     this.node_comprobante = options;
   }
   public createNodeInformacionGlobal(options: INodeInformacionGlobal) {

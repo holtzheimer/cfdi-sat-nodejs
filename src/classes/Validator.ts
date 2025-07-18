@@ -1,4 +1,15 @@
+interface IError {
+  code: string;
+  message: string;
+}
 class Validator {
+  private errors: IError[] = [];
+  getErrors() {
+    return this.errors;
+  }
+  setErrors(errors: IError) {
+    this.errors = [errors];
+  }
   public static validateRfc(rfc: string): boolean {
     const regex = /^([A-ZÑ&]{3,4})-?([0-9]{2})([0-1][0-9])([0-3][0-9])-?([A-Z\d]{3})$/i;
     return regex.test(rfc);
