@@ -71,7 +71,7 @@ class FacturaCfdi extends Utils {
   public createNodeComprobante(options: INodeComprobante) {
     const errors = new ValidatorFacturaCfdi<INodeComprobante>("comprobante", options).getErrors();
     if (errors.length > 0) {
-      const err = `Exist an error at node Comprobante: ${errors[0].code}: ${errors[0].message}`;
+      const err = `Exist an error at createNodeComprobante: ${errors[0].code}: ${errors[0].message}`;
       throw new Error(err);
     }
     this.node_comprobante = options;
