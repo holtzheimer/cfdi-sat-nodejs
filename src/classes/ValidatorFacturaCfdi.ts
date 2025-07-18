@@ -1,6 +1,6 @@
 import { INodeComprobante } from "../interfaces/IFacturaCfdi";
 import Validator from "./Validator";
-import { errors_fecha, errors_folio, errors_forma_pago, errors_serie, errors_tipo_comprobante } from "../utils/errors_factura_cfdi";
+import { errors_fecha, errors_folio, errors_forma_pago, errors_metodo_pago, errors_serie, errors_tipo_comprobante } from "../utils/errors_factura_cfdi";
 import Utils from "./Utils";
 interface IError {
   code: string;
@@ -44,81 +44,98 @@ class ValidatorFacturaCfdi<T extends Record<string, any>> extends Validator {
     if (err_fecha_code !== "") {
       return this.setErrors(errors_fecha.find((i) => i.code === err_fecha_code)!);
     }
-    const err_forma_pago_code = this.validateFormaPago(data.formaPago, data.tipoDeComprobante ?? "I");
+    const err_metodo_pago_cod = this.validateMetodoPago(data.metodoPago, data.tipoDeComprobante ?? "I");
+    if (err_metodo_pago_cod !== "") {
+      return this.setErrors(errors_metodo_pago.find((i) => i.code === err_metodo_pago_cod)!);
+    }
+    const err_forma_pago_code = this.validateFormaPago(data.formaPago, data.tipoDeComprobante ?? "I", data.metodoPago);
     if (err_forma_pago_code !== "") {
       return this.setErrors(errors_forma_pago.find((i) => i.code === err_forma_pago_code)!);
     }
   }
   private validateTipoComprobante(tipo_comprobante: string | undefined): string {
     if (typeof tipo_comprobante !== "string") {
-      return "CSN401210";
+      return "CSN40106";
     }
     if (!tiposComprobante.includes(tipo_comprobante)) {
-      return "CFDI40121";
+      return "CSN40107";
     }
     return "";
   }
   private validateSerie(serie: string | undefined): string {
     if (serie === undefined) {
-      return "CSN400990";
+      return "CSN40108";
     } else {
       if (typeof serie !== "string") {
-        return "CSN400991";
+        return "CSN40109";
       }
       if (serie.trim() === "") {
-        return "CSN400992";
+        return "CSN40110";
       }
     }
     return "";
   }
   private validateFolio(folio: string | undefined): string {
     if (folio === undefined) {
-      return "CSN400980";
+      return "CSN40111";
     } else {
       if (typeof folio !== "string") {
-        return "CSN400981";
+        return "CSN40112";
       }
       if (folio.trim() === "") {
-        return "CSN400982";
+        return "CSN40113";
       }
     }
     return "";
   }
   private validateFecha(data: string | undefined): string {
     if (!data) {
-      return "CSN401010";
+      return "CSN40115";
     } else {
       if (typeof data !== "string") {
-        return "CSN401011";
+        return "CSN40116";
       }
       if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(data)) {
-        return "CFDI40101";
+        return "CSN40114";
       }
       if (new Date(data) > new Date(Utils.dateCurrent())) {
-        return "CSN401012";
+        return "CSN40117";
       }
-      const fecha = new Date(data);
-      const hoy = new Date();
-      if (fecha.getMonth() !== hoy.getMonth() || fecha.getFullYear() !== hoy.getFullYear()) {
-        return "CSN401013";
+      const date = new Date(data);
+      const today = new Date();
+      if (date.getMonth() !== today.getMonth() || date.getFullYear() !== today.getFullYear()) {
+        return "CSN40118";
       }
     }
     return "";
   }
-  private validateFormaPago(data: string | number | undefined, tipo_comprobante: `I` | `E` | `P` | `T`): string {
+  private validateMetodoPago(mp: string | undefined, tipo_comprobante: `I` | `E` | `P` | `T` | "N"): string {
+    if (["I", "E", "N"].includes(tipo_comprobante)) {
+      if (mp === undefined) return "CSN40125";
+      if (!["string"].includes(typeof mp)) return "CSN40126";
+      if (mp === "") return "CSN40127";
+      if (!["PPD", "PUE"].includes(mp)) return "CSN40128";
+    }
+    if (["P", "T"].includes(tipo_comprobante) && mp !== undefined) return "CSN40129";
+    return "";
+  }
+  private validateFormaPago(data: string | number | undefined, tipo_comprobante: `I` | `E` | `P` | `T` | "N", mp: "PPD" | "PUE" | undefined): string {
     if (["I", "E"].includes(tipo_comprobante)) {
       if (data === undefined) {
-        return "CSN401040";
+        return "CSN40122";
       }
       if (!["string", "number"].includes(typeof data)) {
-        return "CSN401041";
+        return "CSN40123";
       }
       if (data.toString() === "") {
-        return "CSN401042";
+        return "CSN40124";
+      }
+      if (data.toString() !== "99" && mp === "PPD") {
+        return "CSN40121";
       }
     }
     if (["P", "N", "T"].includes(tipo_comprobante) && data !== undefined) {
-      return "CFDI40103";
+      return "CSN40119";
     }
     return "";
   }
