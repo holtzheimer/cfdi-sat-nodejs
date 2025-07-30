@@ -208,8 +208,8 @@ class FacturaCfdi extends Utils {
 
     if (createNodeImpuestos.total_impuestos_retenidos.total > 0 || createNodeImpuestos.total_impuestos_trasladados.total > 0) {
       const ele_impuestos = doc.ele("cfdi:Impuestos", {
-        TotalImpuestosRetenidos: createNodeImpuestos.total_impuestos_retenidos.total.toFixed(2),
-        TotalImpuestosTrasladados: createNodeImpuestos.total_impuestos_trasladados.total.toFixed(2),
+        TotalImpuestosRetenidos: createNodeImpuestos.total_impuestos_retenidos.total > 0 ? createNodeImpuestos.total_impuestos_retenidos.total.toFixed(2) : undefined,
+        TotalImpuestosTrasladados: createNodeImpuestos.total_impuestos_trasladados.total > 0 ? createNodeImpuestos.total_impuestos_trasladados.total.toFixed(2) : undefined,
       });
       if (createNodeImpuestos.total_impuestos_retenidos.data.length > 0) {
         const ele_ret = ele_impuestos.ele("cfdi:Retenciones");
